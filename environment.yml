@@ -1,0 +1,15 @@
+name: limewire
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - numpy
+  - pymongo
+  - pretty_midi
+  - mido
+  - selenium
+  - pip:
+      - dotenv
+      - librosa
