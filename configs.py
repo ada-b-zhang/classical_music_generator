@@ -17,4 +17,5 @@ MUSIC_MAP = {
         "Saint-Saëns", "Grieg", "Dvořák", "Mahler"
     ]
 }
-MUSIC_LINK = "https://www.midiworld.com/bach.htm"
+MUSIC_LINK = "https://www.midiworld.com"
+MONGO_URI = os.getenv('MONGO_URI')
