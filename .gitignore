@@ -1,10 +1,11 @@
+db/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *.so
 
 # Virtual environments
-.env/
+.env
 .venv/
 env/
 venv/

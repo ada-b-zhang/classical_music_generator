@@ -6,10 +6,13 @@ dependencies:
   - python=3.10
   - pip
   - numpy
+  - pandas
   - pymongo
   - pretty_midi
   - mido
   - selenium
+  - beautifulsoup4
+  - requests
   - pip:
       - dotenv
       - librosa
