@@ -1,0 +1,31 @@
+{
+    "mcpServers": {
+      "everything": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-everything"
+        ]
+      },
+      "filesystem": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-filesystem",
+          "/Users/drewhoang/Desktop/mcp-electron/"
+        ]
+      },
+      "demo": {
+        "command": "uv",
+        "args": [
+          "run",
+          "--with",
+          "mcp[cli]",
+          "mcp",
+          "run",
+          "/Users/drewhoang/Desktop/mcp-electron/server/main.py"
+        ]
+      }
+    }
+  }
+  
