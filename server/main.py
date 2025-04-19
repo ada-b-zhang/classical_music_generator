@@ -70,3 +70,35 @@ def note_summary_prompt() -> str:
         return "There are no notes yet."
 
     return f"Summarize the current notes: {content}"
+
+@mcp.tool()
+def read_music_file() -> str:
+    """
+    Search for all music files in the user's Music folder and return a list of them.
+
+    Returns:
+        str: A list of all music files in the user's Music folder.
+    """
+    home_dir = os.path.expanduser("~")
+    music_path = os.path.join(home_dir, "Music")
+
+    music_files = []
+
+    try:
+        for root, _, files in os.walk(music_path):
+            for file in files:
+                if file.endswith((".mp3", ".wav", ".m4a", ".flac", ".aac", ".ogg", ".alac")):
+                    rel_path = os.path.relpath(os.path.join(root, file), music_path)
+                    music_files.append(rel_path)
+        
+        if not music_files:
+            return "No music files found in your Music folder."
+        
+        return f"Found {len(music_files)} music files:\n" + "\n".join(music_files[:20]) + \
+               ("\n...(more files not shown)" if len(music_files) > 20 else "")
+    
+    except Exception as e:
+        return f"Error accessing Music folder: {str(e)}"
+
+
+

@@ -12,7 +12,8 @@
         "args": [
           "-y",
           "@modelcontextprotocol/server-filesystem",
-          "/Users/drewhoang/Desktop/mcp-electron/"
+          "/Users/nicholasbarsi-rhyne/Projects/classical_music_generator/",
+          "/Users/nicholasbarsi-rhyne/Desktop/"
         ]
       },
       "demo": {
@@ -23,7 +24,7 @@
           "mcp[cli]",
           "mcp",
           "run",
-          "/Users/drewhoang/Desktop/mcp-electron/server/main.py"
+          "/Users/nicholasbarsi-rhyne/Projects/classical_music_generator/server/main.py"
         ]
       }
     }

@@ -8,3 +8,5 @@ wheels/
 
 # Virtual environments
 .venv
+tool_testing.ipynb
+notes.txt
