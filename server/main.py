@@ -1,10 +1,16 @@
 from mcp.server.fastmcp import FastMCP
 import os
-
+import sys
+import requests
 # Create an MCP server
-mcp = FastMCP("AI Sticky Notes")
+mcp = FastMCP("AI Sticky Notes", dependencies=["requests"])
 
 NOTES_FILE = os.path.join(os.path.dirname(__file__), "notes.txt")
+
+print(f"Python executable path: {sys.executable}")
+print(f"Python version: {sys.version}")
+print(f"PYTHONPATH: {os.environ.get('PYTHONPATH', 'Not set')}")
+print(f"Current working directory: {os.getcwd()}")
 
 def ensure_file():
     if not os.path.exists(NOTES_FILE):
@@ -70,3 +76,80 @@ def note_summary_prompt() -> str:
         return "There are no notes yet."
 
     return f"Summarize the current notes: {content}"
+
+@mcp.tool()
+def read_music_file() -> str:
+    """
+    Search for all music files in the user's Music folder and return a list of them.
+
+    Returns:
+        str: A list of all music files in the user's Music folder.
+    """
+    home_dir = os.path.expanduser("~")
+    music_path = os.path.join(home_dir, "Music")
+
+    music_files = []
+
+    try:
+        for root, _, files in os.walk(music_path):
+            for file in files:
+                if file.endswith((".mp3", ".wav", ".m4a", ".flac", ".aac", ".ogg", ".alac")):
+                    rel_path = os.path.relpath(os.path.join(root, file), music_path)
+                    music_files.append(rel_path)
+        
+        if not music_files:
+            return "No music files found in your Music folder."
+        
+        return f"Found {len(music_files)} music files:\n" + "\n".join(music_files[:20]) + \
+               ("\n...(more files not shown)" if len(music_files) > 20 else "")
+    
+    except Exception as e:
+        return f"Error accessing Music folder: {str(e)}"
+
+@mcp.tool()
+def get_model_predictions(text: str) -> str:
+    """
+    Get predictions from the model for a given text.
+
+    Args:
+        text (str): The text to get predictions for.
+
+    Returns:
+        str: A list of predictions for the given text.
+    """
+    try:
+        # Convert text input to float values (you may need to adjust this based on your actual requirements)
+        # This is a simple example that converts characters to ASCII values
+        inputs = [float(ord(c)) for c in text]
+        
+        # Prepare the request payload
+        payload = {
+            "inputs": inputs,
+            "parameters": {"text": text}  # Optional parameters
+        }
+        
+        # Make request to the FastAPI server
+        response = requests.post(
+            "http://localhost:8000/predict",
+            json=payload
+        )
+        
+        # Check if request was successful
+        response.raise_for_status()
+        
+        # Parse the response
+        result = response.json()
+        
+        # Format the response for display
+        return f"Prediction results:\n" + \
+               f"Values: {result['prediction']}\n" + \
+               f"Model version: {result['model_version']}\n" + \
+               f"Processing time: {result['processing_time']:.3f} seconds"
+    
+    except requests.exceptions.ConnectionError:
+        return "Error: Could not connect to the prediction server. Make sure it's running on port 8000."
+    except Exception as e:
+        return f"Error making prediction: {str(e)}"
+
+
+

@@ -1,9 +1,9 @@
-name: limewire
+name: MGP
 channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.10
+  - python=3.11
   - pip
   - numpy
   - pandas
@@ -13,6 +13,10 @@ dependencies:
   - selenium
   - beautifulsoup4
   - requests
+  - fastapi
+  - pydantic
+  - uvicorn
   - pip:
       - dotenv
       - librosa
+      - mcp
