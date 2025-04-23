@@ -1,10 +1,16 @@
 from mcp.server.fastmcp import FastMCP
 import os
+import sys
 import requests
 # Create an MCP server
-mcp = FastMCP("AI Sticky Notes")
+mcp = FastMCP("AI Sticky Notes", dependencies=["requests"])
 
 NOTES_FILE = os.path.join(os.path.dirname(__file__), "notes.txt")
+
+print(f"Python executable path: {sys.executable}")
+print(f"Python version: {sys.version}")
+print(f"PYTHONPATH: {os.environ.get('PYTHONPATH', 'Not set')}")
+print(f"Current working directory: {os.getcwd()}")
 
 def ensure_file():
     if not os.path.exists(NOTES_FILE):

@@ -21,7 +21,7 @@
         "args": [
           "run",
           "--with",
-          "mcp[cli]",
+          "mcp[cli], requests",
           "mcp",
           "run",
           "/Users/nicholasbarsi-rhyne/Projects/classical_music_generator/server/main.py"
