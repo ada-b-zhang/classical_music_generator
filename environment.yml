@@ -13,6 +13,10 @@ dependencies:
   - selenium
   - beautifulsoup4
   - requests
+  - fastapi
+  - pydantic
+  - uvicorn
   - pip:
       - dotenv
       - librosa
+      - mcp
