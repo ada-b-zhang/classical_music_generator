@@ -1,6 +1,6 @@
 from mcp.server.fastmcp import FastMCP
 import os
-
+import requests
 # Create an MCP server
 mcp = FastMCP("AI Sticky Notes")
 
@@ -99,6 +99,51 @@ def read_music_file() -> str:
     
     except Exception as e:
         return f"Error accessing Music folder: {str(e)}"
+
+@mcp.tool()
+def get_model_predictions(text: str) -> str:
+    """
+    Get predictions from the model for a given text.
+
+    Args:
+        text (str): The text to get predictions for.
+
+    Returns:
+        str: A list of predictions for the given text.
+    """
+    try:
+        # Convert text input to float values (you may need to adjust this based on your actual requirements)
+        # This is a simple example that converts characters to ASCII values
+        inputs = [float(ord(c)) for c in text]
+        
+        # Prepare the request payload
+        payload = {
+            "inputs": inputs,
+            "parameters": {"text": text}  # Optional parameters
+        }
+        
+        # Make request to the FastAPI server
+        response = requests.post(
+            "http://localhost:8000/predict",
+            json=payload
+        )
+        
+        # Check if request was successful
+        response.raise_for_status()
+        
+        # Parse the response
+        result = response.json()
+        
+        # Format the response for display
+        return f"Prediction results:\n" + \
+               f"Values: {result['prediction']}\n" + \
+               f"Model version: {result['model_version']}\n" + \
+               f"Processing time: {result['processing_time']:.3f} seconds"
+    
+    except requests.exceptions.ConnectionError:
+        return "Error: Could not connect to the prediction server. Make sure it's running on port 8000."
+    except Exception as e:
+        return f"Error making prediction: {str(e)}"
 
 
 
