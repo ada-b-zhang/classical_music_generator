@@ -7,11 +7,6 @@ mcp = FastMCP("AI Sticky Notes", dependencies=["requests"])
 
 NOTES_FILE = os.path.join(os.path.dirname(__file__), "notes.txt")
 
-print(f"Python executable path: {sys.executable}")
-print(f"Python version: {sys.version}")
-print(f"PYTHONPATH: {os.environ.get('PYTHONPATH', 'Not set')}")
-print(f"Current working directory: {os.getcwd()}")
-
 def ensure_file():
     if not os.path.exists(NOTES_FILE):
         with open(NOTES_FILE, "w") as f:

@@ -4,7 +4,7 @@ Virtual Environment (Mac)
 
 ``` bash
 conda env create -f environment.yml
-conda activate limewire
+conda activate MGP
 ```
 
 Note: When pulling changes from the environment.yml, ensure you update your virtual environment
