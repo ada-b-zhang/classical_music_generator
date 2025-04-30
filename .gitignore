@@ -1,4 +1,4 @@
-db/
+lsdb/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -33,3 +33,5 @@ mongo_data/
 
 # Conda environment files (optional)
 conda-meta/
+
+model_trained_on_MAESTRO_and_scraped_data/data/
