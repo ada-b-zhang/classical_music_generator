@@ -1,10 +1,15 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
+from tensorflow.keras.models import load_model
 import uvicorn
+import tensorflow as tf
 
 # Initialize FastAPI app
 app = FastAPI(title="Prediction API", description="API for making predictions", version="1.0.0")
+
+def helper_function(x):
+    return tf.reduce_sum(x, axis=1)
 
 # Create a request model
 class PredictionRequest(BaseModel):
@@ -40,6 +45,10 @@ async def make_prediction(inputs, parameters=None):
 # Define the prediction route
 @app.post("/predict", response_model=PredictionResponse)
 async def predict(request: PredictionRequest):
+
+    print(request)
+    model = load_model('music_generation_model.keras', safe_mode=False, custom_objects={'helper_function': helper_function,'tf':tf})
+    print(model.summary())
     try:
         result = await make_prediction(request.inputs, request.parameters)
         return result
