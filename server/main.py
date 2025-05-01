@@ -2,6 +2,8 @@ from mcp.server.fastmcp import FastMCP
 import os
 import sys
 import requests
+from midi2audio import FluidSynth
+
 # Create an MCP server
 mcp = FastMCP("AI Sticky Notes", dependencies=["requests"])
 
@@ -146,5 +148,15 @@ def get_model_predictions(text: str) -> str:
     except Exception as e:
         return f"Error making prediction: {str(e)}"
 
-
-
+@mcp.tool()
+def convert_audio_file(file: str):
+    home_dir = os.path.expanduser("~")
+    music_path = os.path.join(home_dir, "Music")
+    if file.endswith((".wav")):
+        fs = FluidSynth()
+        fs.midi_to_audio("~/Downloads/loser.mid", f"{music_path}/{file}")
+    elif file.endswith((".mp3", ".m4a")):
+        fs = FluidSynth(sound_font="example.sf2")
+        fs.midi_to_audio("~/Downloads/loser.mid", f"{music_path}/{file}.wav")
+    else:
+        print("Unsupported file format. You suck.")

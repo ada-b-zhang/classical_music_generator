@@ -70,6 +70,7 @@ cat > "$CONFIG_FILE" << EOF
           "run",
           "--with",
           "mcp[cli], requests",
+          "FluidSynth",
           "mcp",
           "run",
           "$SERVER_SCRIPT_PATH"
