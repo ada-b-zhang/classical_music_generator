@@ -138,86 +138,9 @@ def get_model_predictions(text: str) -> str:
         result = response.json()
         
         # Format the response for display
-        return f"Prediction results:\n" + \
-               f"Values: {result['prediction']}\n" + \
-               f"Model version: {result['model_version']}\n" + \
-               f"Processing time: {result['processing_time']:.3f} seconds"
+        return f"Music was generated and saved to {result['file_path']}"
     
     except requests.exceptions.ConnectionError:
         return "Error: Could not connect to the prediction server. Make sure it's running on port 8000."
     except Exception as e:
         return f"Error making prediction: {str(e)}"
-
-@mcp.tool()
-def convert_audio_file(file_pattern: str, save_path: str):
-    """
-    Find and convert a MIDI file to WAV audio format.
-    
-    Args:
-        file_pattern (str): Pattern to search for the MIDI file (e.g., "my_song" or "*.mid")
-        save_path (str): Destination path for the converted WAV file
-    
-    Returns:
-        str: Success message with the saved file location
-    """
-    
-    # Use MCP's file system search tool to find matching files
-    search_results = mcp.tools.search_files(
-        pattern=file_pattern, 
-        directories=[os.path.expanduser("~"), os.path.expanduser("~/Music")],
-        file_extensions=[".mid", ".midi"]
-    )
-    
-    if not search_results:
-        # No matching files found
-        new_pattern = mcp.ask(f"No files matching '{file_pattern}' were found. Please provide a different search term:")
-        search_results = mcp.tools.search_files(
-            pattern=new_pattern, 
-            directories=[os.path.expanduser("~"), os.path.expanduser("~/Music")],
-            file_extensions=[".mid", ".midi"]
-        )
-        
-        if not search_results:
-            return f"Error: Could not find any files matching '{new_pattern}'."
-    
-    # If multiple files are found, let the user choose
-    if len(search_results) > 1:
-        file_list = "\n".join([f"{i+1}. {file}" for i, file in enumerate(search_results)])
-        selection = mcp.ask(f"Found multiple matching files:\n{file_list}\n\nEnter the number of the file you want to convert:")
-        
-        try:
-            index = int(selection) - 1
-            if 0 <= index < len(search_results):
-                input_path = search_results[index]
-            else:
-                return "Invalid selection. Please try again."
-        except ValueError:
-            return "Invalid input. Please enter a number."
-    else:
-        input_path = search_results[0]
-        confirmation = mcp.ask(f"Found file: {input_path}\nDo you want to convert this file? (yes/no)")
-        if confirmation.lower() not in ["yes", "y"]:
-            return "Conversion cancelled."
-    
-    # Handle the output path
-    home_dir = os.path.expanduser("~")
-    music_dir = os.path.join(home_dir, "Music")
-    
-    # Ensure the output path has a .wav extension
-    if not save_path.endswith(".wav"):
-        save_path = f"{save_path}.wav"
-    
-    output_path = os.path.join(music_dir, save_path)
-    
-    # Create output directory if it doesn't exist
-    output_dir = os.path.dirname(output_path)
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-    
-    # Convert the file
-    try:
-        fs = FluidSynth()
-        fs.midi_to_audio(input_path, output_path)
-        return f"Audio file converted successfully and saved at {output_path}"
-    except Exception as e:
-        return f"Error during conversion: {str(e)}"
