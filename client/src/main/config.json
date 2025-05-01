@@ -12,8 +12,8 @@
         "args": [
           "-y",
           "@modelcontextprotocol/server-filesystem",
-          "/Users/animaznman/Library/CloudStorage/OneDrive-Personal/Documents/Coding/USF Masters/MLOps/classical_music_generator/",
-          "/Users/animaznman/Desktop/"
+          "/Users/nicholasbarsi-rhyne/Projects/classical_music_generator/",
+          "/Users/nicholasbarsi-rhyne/Desktop/"
         ]
       },
       "demo": {
@@ -21,11 +21,10 @@
         "args": [
           "run",
           "--with",
-          "mcp[cli], requests",
-          "FluidSynth",
+          "mcp[cli], requests, midi2audio",
           "mcp",
           "run",
-          "/Users/animaznman/Library/CloudStorage/OneDrive-Personal/Documents/Coding/USF Masters/MLOps/classical_music_generator/server/main.py"
+          "/Users/nicholasbarsi-rhyne/Projects/classical_music_generator/server/main.py"
         ]
       }
     }

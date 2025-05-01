@@ -152,11 +152,11 @@ def get_model_predictions(text: str) -> str:
 def convert_audio_file(file: str):
     home_dir = os.path.expanduser("~")
     music_path = os.path.join(home_dir, "Music")
-    if file.endswith((".wav")):
-        fs = FluidSynth()
-        fs.midi_to_audio("~/Downloads/loser.mid", f"{music_path}/{file}")
-    elif file.endswith((".mp3", ".m4a")):
-        fs = FluidSynth(sound_font="example.sf2")
-        fs.midi_to_audio("~/Downloads/loser.mid", f"{music_path}/{file}.wav")
-    else:
-        print("Unsupported file format. You suck.")
+    # if file.endswith((".wav")):
+    #     fs = FluidSynth()
+    #     fs.midi_to_audio("/Users/nicholasbarsi-rhyne/Projects/classical_music_generator/generated_classical (2).mid", f"{music_path}/{file}")
+    # elif file.endswith((".mp3", ".m4a")):
+    #     fs = FluidSynth(sound_font="example.sf2")
+    #     fs.midi_to_audio("/Users/nicholasbarsi-rhyne/Projects/classical_music_generator/generated_classical (2).mid", f"{music_path}/{file}.wav")
+    # else:
+    #     print("Unsupported file format. You suck.")

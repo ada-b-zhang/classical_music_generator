@@ -3,6 +3,9 @@ keys.json
 dist/
 node_modules/
 db/
+db2/
+generated*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

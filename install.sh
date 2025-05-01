@@ -69,8 +69,7 @@ cat > "$CONFIG_FILE" << EOF
         "args": [
           "run",
           "--with",
-          "mcp[cli], requests",
-          "FluidSynth",
+          "mcp[cli], requests, midi2audio",
           "mcp",
           "run",
           "$SERVER_SCRIPT_PATH"
