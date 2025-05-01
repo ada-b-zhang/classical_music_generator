@@ -90,7 +90,7 @@ def read_music_file() -> str:
     try:
         for root, _, files in os.walk(music_path):
             for file in files:
-                if file.endswith((".mp3", ".wav", ".m4a", ".flac", ".aac", ".ogg", ".alac")):
+                if file.endswith((".mp3", ".wav", ".m4a", ".flac", ".aac", ".ogg", ".alac", ".mid", ".midi")):
                     rel_path = os.path.relpath(os.path.join(root, file), music_path)
                     music_files.append(rel_path)
         
@@ -149,14 +149,75 @@ def get_model_predictions(text: str) -> str:
         return f"Error making prediction: {str(e)}"
 
 @mcp.tool()
-def convert_audio_file(file: str):
+def convert_audio_file(file_pattern: str, save_path: str):
+    """
+    Find and convert a MIDI file to WAV audio format.
+    
+    Args:
+        file_pattern (str): Pattern to search for the MIDI file (e.g., "my_song" or "*.mid")
+        save_path (str): Destination path for the converted WAV file
+    
+    Returns:
+        str: Success message with the saved file location
+    """
+    
+    # Use MCP's file system search tool to find matching files
+    search_results = mcp.tools.search_files(
+        pattern=file_pattern, 
+        directories=[os.path.expanduser("~"), os.path.expanduser("~/Music")],
+        file_extensions=[".mid", ".midi"]
+    )
+    
+    if not search_results:
+        # No matching files found
+        new_pattern = mcp.ask(f"No files matching '{file_pattern}' were found. Please provide a different search term:")
+        search_results = mcp.tools.search_files(
+            pattern=new_pattern, 
+            directories=[os.path.expanduser("~"), os.path.expanduser("~/Music")],
+            file_extensions=[".mid", ".midi"]
+        )
+        
+        if not search_results:
+            return f"Error: Could not find any files matching '{new_pattern}'."
+    
+    # If multiple files are found, let the user choose
+    if len(search_results) > 1:
+        file_list = "\n".join([f"{i+1}. {file}" for i, file in enumerate(search_results)])
+        selection = mcp.ask(f"Found multiple matching files:\n{file_list}\n\nEnter the number of the file you want to convert:")
+        
+        try:
+            index = int(selection) - 1
+            if 0 <= index < len(search_results):
+                input_path = search_results[index]
+            else:
+                return "Invalid selection. Please try again."
+        except ValueError:
+            return "Invalid input. Please enter a number."
+    else:
+        input_path = search_results[0]
+        confirmation = mcp.ask(f"Found file: {input_path}\nDo you want to convert this file? (yes/no)")
+        if confirmation.lower() not in ["yes", "y"]:
+            return "Conversion cancelled."
+    
+    # Handle the output path
     home_dir = os.path.expanduser("~")
-    music_path = os.path.join(home_dir, "Music")
-    # if file.endswith((".wav")):
-    #     fs = FluidSynth()
-    #     fs.midi_to_audio("/Users/nicholasbarsi-rhyne/Projects/classical_music_generator/generated_classical (2).mid", f"{music_path}/{file}")
-    # elif file.endswith((".mp3", ".m4a")):
-    #     fs = FluidSynth(sound_font="example.sf2")
-    #     fs.midi_to_audio("/Users/nicholasbarsi-rhyne/Projects/classical_music_generator/generated_classical (2).mid", f"{music_path}/{file}.wav")
-    # else:
-    #     print("Unsupported file format. You suck.")
+    music_dir = os.path.join(home_dir, "Music")
+    
+    # Ensure the output path has a .wav extension
+    if not save_path.endswith(".wav"):
+        save_path = f"{save_path}.wav"
+    
+    output_path = os.path.join(music_dir, save_path)
+    
+    # Create output directory if it doesn't exist
+    output_dir = os.path.dirname(output_path)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    
+    # Convert the file
+    try:
+        fs = FluidSynth()
+        fs.midi_to_audio(input_path, output_path)
+        return f"Audio file converted successfully and saved at {output_path}"
+    except Exception as e:
+        return f"Error during conversion: {str(e)}"
