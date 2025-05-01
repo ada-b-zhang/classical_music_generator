@@ -4,6 +4,8 @@ from typing import List, Dict, Any, Optional
 from tensorflow.keras.models import load_model
 import uvicorn
 import tensorflow as tf
+from utils import get_predictions
+
 
 # Initialize FastAPI app
 app = FastAPI(title="Prediction API", description="API for making predictions", version="1.0.0")
@@ -18,37 +20,22 @@ class PredictionRequest(BaseModel):
 
 # Create a response model
 class PredictionResponse(BaseModel):
-    prediction: List[float]
-    model_version: str
-    processing_time: float
+    file_path: str
 
 # Mock prediction function (replace with your actual model)
 async def make_prediction(inputs, parameters=None):
     # This is where you would call your actual model
-    import time
-    import random
     
-    # Simulate processing time
-    start_time = time.time()
-    time.sleep(0.1)  # Simulate model inference time
-    
-    # Return mock predictions
-    predictions = [x * random.random() for x in inputs]
-    processing_time = time.time() - start_time
+    model = load_model('music_generation_model.keras', safe_mode=False, custom_objects={'helper_function': helper_function,'tf':tf})
+    file_path = get_predictions(model)
     
     return {
-        "prediction": predictions,
-        "model_version": "v1.0",
-        "processing_time": processing_time
+        "file_path": file_path,
     }
 
 # Define the prediction route
 @app.post("/predict", response_model=PredictionResponse)
 async def predict(request: PredictionRequest):
-
-    print(request)
-    model = load_model('music_generation_model.keras', safe_mode=False, custom_objects={'helper_function': helper_function,'tf':tf})
-    print(model.summary())
     try:
         result = await make_prediction(request.inputs, request.parameters)
         return result

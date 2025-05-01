@@ -2,13 +2,27 @@ from music21 import note, chord, stream, instrument, duration
 import numpy as np
 import time
 import pickle
+from midi2audio import FluidSynth
+
+
 def read_pickle(file_path):
     with open(file_path, 'rb') as f:
         return pickle.load(f)
+    
+def sample_with_temp(preds, temperature):
+    if temperature == 0:
+        return np.argmax(preds)
+    else:
+        preds = np.log(preds) / temperature
+        exp_preds = np.exp(preds)
+        preds = exp_preds / np.sum(exp_preds)
+        return np.random.choice(len(preds), p=preds)
 
-def get_predictions(model, att_model, use_attention=True):
+def get_predictions(model, use_attention=True):
     note_to_int = read_pickle('note_to_int.pkl')
     duration_to_int = read_pickle('duration_to_int.pkl')
+    int_to_note = read_pickle('int_to_note.pkl')
+    int_to_duration = read_pickle('int_to_duration.pkl')
     notes_temp=0.9
     duration_temp = 0.9
     max_extra_notes = 210
@@ -54,9 +68,9 @@ def get_predictions(model, att_model, use_attention=True):
         ]
 
         notes_prediction, durations_prediction = model.predict(prediction_input, verbose=0)
-        if use_attention:
-            att_prediction = att_model.predict(prediction_input, verbose=0)[0]
-            att_matrix[(note_index-len(att_prediction)+sequence_length):(note_index+sequence_length), note_index] = att_prediction
+        # if use_attention:
+        #     att_prediction = att_model.predict(prediction_input, verbose=0)[0]
+        #     att_matrix[(note_index-len(att_prediction)+sequence_length):(note_index+sequence_length), note_index] = att_prediction
 
         new_note = np.zeros(128)
 
@@ -123,3 +137,6 @@ def get_predictions(model, att_model, use_attention=True):
     timestr = time.strftime("%Y%m%d-%H%M%S")
     new_file = 'output-' + timestr + '.mid'
     midi_stream.write('midi', new_file)
+    fs = FluidSynth()
+    fs.midi_to_audio(new_file, f'output-{timestr}.wav')
+    return f'output-{timestr}.wav'
