@@ -1,8 +1,14 @@
 from music21 import note, chord, stream, instrument, duration
 import numpy as np
 import time
+import pickle
+def read_pickle(file_path):
+    with open(file_path, 'rb') as f:
+        return pickle.load(f)
 
-def get_predictions(model, att_model, note_to_int, duration_to_int, use_attention=True):
+def get_predictions(model, att_model, use_attention=True):
+    note_to_int = read_pickle('note_to_int.pkl')
+    duration_to_int = read_pickle('duration_to_int.pkl')
     notes_temp=0.9
     duration_temp = 0.9
     max_extra_notes = 210
