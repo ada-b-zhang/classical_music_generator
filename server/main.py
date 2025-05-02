@@ -1,8 +1,8 @@
-from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp import FastMCP, Context
 import os
-import sys
 import requests
-from midi2audio import FluidSynth
+import pygame
+import asyncio
 
 # Create an MCP server
 mcp = FastMCP("AI Sticky Notes", dependencies=["requests"])
@@ -104,7 +104,7 @@ def read_music_file() -> str:
         return f"Error accessing Music folder: {str(e)}"
 
 @mcp.tool()
-def get_model_predictions(text: str) -> str:
+def generate_new_music(text: str) -> str:
     """
     Get predictions from the model for a given text.
 
@@ -144,3 +144,63 @@ def get_model_predictions(text: str) -> str:
         return "Error: Could not connect to the prediction server. Make sure it's running on port 8000."
     except Exception as e:
         return f"Error making prediction: {str(e)}"
+    
+# @mcp.tool()
+# async def play_music(file_path: str) -> str:
+#     """
+#     Play a music file.
+#     """
+#     # Initialize pygame mixer
+#     pygame.mixer.init()
+    
+#     # Load the sound file
+#     sound = pygame.mixer.Sound(f'/Users/nicholasbarsi-rhyne/Projects/classical_music_generator/model/{file_path}')
+#     # sound = pygame.mixer.Sound(file_path)
+
+#     # Play the sound
+#     channel = sound.play()
+
+#     start_time = pygame.time.get_ticks()
+#     duration = int(sound.get_length() * 1000)  # Convert to milliseconds
+    
+#     # Wait for at most the duration of the sound
+#     while channel.get_busy() and pygame.time.get_ticks() - start_time < duration:
+#         await asyncio.sleep(0.1)  # Short sleep to prevent CPU hogging
+    
+#     # We don't quit pygame here
+
+#     return "Music played successfully!"
+
+
+@mcp.tool()
+async def play_music(file_path: str) -> str:
+    """
+    Play a music file.
+    """
+    try:
+        import asyncio
+        import pygame.mixer
+        
+        # Initialize only the mixer, not all of pygame
+        pygame.mixer.init()
+        
+        full_path = f'/Users/nicholasbarsi-rhyne/Projects/classical_music_generator/model/{file_path}'
+        
+        # Load the sound file
+        try:
+            sound = pygame.mixer.Sound(full_path)
+        except Exception as e:
+            return f"Error loading sound: {str(e)}"
+        
+        # Play the sound
+        channel = sound.play()
+        
+        # Sleep for a short time to let playback start
+        await asyncio.sleep(0.5)
+        
+        # Return immediately without waiting for the entire sound
+        # This prevents blocking the server
+        return f"Started playing {file_path} - playback in progress"
+        
+    except Exception as e:
+        return f"Error in play_music: {str(e)}"
