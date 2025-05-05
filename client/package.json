@@ -1,9 +1,9 @@
 {
-    "name": "ada-and-the-addettes",
+    "name": "bacprop",
     "version": "1.0.0",
     "author": {
-        "name": "DAMNJ",
-        "email": "contact@damnj.com"
+        "name": "bacprop",
+        "email": "contact@bacprop.com"
     },
     "description": "MCP Client for MLOps",
     "main": "dist/main/main.js",

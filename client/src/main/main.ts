@@ -8,7 +8,6 @@ import {
 } from './types.js';
 import { initializeClient, manageRequests } from './client.js';
 
-import notifier from 'node-notifier';
 
 import path from 'path';
 import { dirname } from 'path';
@@ -79,30 +78,30 @@ async function initClient(): Promise<ClientObj[]> {
       );
 
       console.log('All clients initialized.');
-      notifier.notify({
-        appID: 'DAMN',
-        title: "MCP Servers are ready",
-        message: "All Clients initialized."
-      });
+      // notifier.notify({
+      //   appID: 'DAMN',
+      //   title: "MCP Servers are ready",
+      //   message: "All Clients initialized."
+      // });
 
       return clients;
     } catch (error) {
       console.error('Error during client initialization:', error?.message);
-      notifier.notify({
-        appID: 'AIQL',
-        title: 'Client initialization failed',
-        message: "Cannot start with current config, " +  error?.message,
-      });
+      // notifier.notify({
+      //   appID: 'AIQL',
+      //   title: 'Client initialization failed',
+      //   message: "Cannot start with current config, " +  error?.message,
+      // });
 
       process.exit(1);
     }
   } else {
     console.log('NO clients initialized.');
-    notifier.notify({
-      appID: 'AIQL',
-      title: 'NO clients initialized',
-      message: "NO valid JSON config found.",
-    });
+    // notifier.notify({
+    //   appID: 'AIQL',
+    //   title: 'NO clients initialized',
+    //   message: "NO valid JSON config found.",
+    // });
     return [];
   }
 }
