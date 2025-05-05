@@ -25,6 +25,14 @@
             {
                 "from": "./src/main/config.json",
                 "to": "."
+            },
+            {
+                "from": "../server/main.py",
+                "to": "MCP/main.py"
+            },
+            {
+                "from": "../server/requirements.txt",
+                "to": "MCP/requirements.txt"
             }
         ],
         "win": {
@@ -58,6 +66,7 @@
         "typescript": "^5.7.3"
     },
     "dependencies": {
-        "@modelcontextprotocol/sdk": "^1.9.0"
+        "@modelcontextprotocol/sdk": "^1.9.0",
+        "electron-log": "^5.4.0"
     }
 }

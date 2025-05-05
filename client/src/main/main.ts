@@ -13,18 +13,24 @@ import path from 'path';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { readFileSync } from 'fs';
+import log from 'electron-log/main.js';
+
+// Optional, initialize the logger for any renderer process
+
+log.info('Log from the main process');
 
 let appPath;
 
 if (app.isPackaged) {
   // Electron Packaged
-  appPath = path.dirname(process.execPath);
+  appPath = "/Applications/bacprop.app/Contents"
+  
 } else {
   // Dev
   appPath = app.getAppPath();
 }
 
-console.log('Current Path:', appPath);
+log.debug('Current Path:', appPath);
 
 const configPath = path.join(appPath, 'config.json');
 
@@ -45,7 +51,7 @@ function readConfig(configPath: string): McpServersConfig | null {
     const config = readFileSync(configPath, 'utf8');
     return JSON.parse(config);
   } catch (error) {
-    console.error('Error reading config file:', error);
+    log.error('Error reading config file:', error);
     return null;
   }
 }
@@ -53,12 +59,12 @@ function readConfig(configPath: string): McpServersConfig | null {
 async function initClient(): Promise<ClientObj[]> {
   const config = readConfig(configPath);
   if (config) {
-    console.log('Config loaded:', config);
+    log.info('Config loaded:', config);
 
     try {
       const clients = await Promise.all(
         Object.entries(config.mcpServers).map(async ([name, serverConfig]) => {
-          console.log(`Initializing client for ${name} with config:`, serverConfig);
+          log.info(`Initializing client for ${name} with config:`, serverConfig);
 
           const timeoutPromise = new Promise<Client>((resolve, reject) => {
             setTimeout(() => {
@@ -71,13 +77,13 @@ async function initClient(): Promise<ClientObj[]> {
             timeoutPromise,
           ]);
 
-          console.log(`${name} initialized.`);
+          log.info(`${name} initialized.`);
           const capabilities = client.getServerCapabilities();
           return { name, client, capabilities };
         })
       );
 
-      console.log('All clients initialized.');
+      log.info('All clients initialized.');
       // notifier.notify({
       //   appID: 'DAMN',
       //   title: "MCP Servers are ready",
@@ -86,7 +92,7 @@ async function initClient(): Promise<ClientObj[]> {
 
       return clients;
     } catch (error) {
-      console.error('Error during client initialization:', error?.message);
+      log.error('Error during client initialization:', error?.message);
       // notifier.notify({
       //   appID: 'AIQL',
       //   title: 'Client initialization failed',
@@ -96,7 +102,7 @@ async function initClient(): Promise<ClientObj[]> {
       process.exit(1);
     }
   } else {
-    console.log('NO clients initialized.');
+    log.error('NO clients initialized.');
     // notifier.notify({
     //   appID: 'AIQL',
     //   title: 'NO clients initialized',
@@ -146,7 +152,7 @@ app.whenReady().then(async () => {
 
     const registerHandler = (method: string, schema: any) => {
       const eventName = `${name}-${method}`;
-      console.log(`IPC Main ${eventName}`);
+      log.info(`IPC Main ${eventName}`);
       ipcMain.handle(eventName, async (event, params) => {
         return await manageRequests(client, `${method}`, schema, params);
       });
@@ -182,11 +188,11 @@ app.whenReady().then(async () => {
   }
 
   const features = clients.map(({ name, client, capabilities }) => {
-    console.log('Capabilities:', name, '\n', capabilities);
+    log.info('Capabilities:', name, '\n', capabilities);
     return registerIpcHandlers(name, client, capabilities);
   });
 
-  console.log(features)
+  log.info(features)
 
 });
 
