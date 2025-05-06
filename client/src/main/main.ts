@@ -14,12 +14,17 @@ import { fileURLToPath } from 'url';
 import { readFileSync, existsSync } from 'fs';
 import log from 'electron-log/main.js';
 
+process.env.PATH = '/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin';
+
 
 // Configure logging
 log.transports.file.level = 'debug';
 log.transports.console.level = 'debug';
 
 log.info('Log from the main process');
+
+log.debug('ENV', process.env);
+log.debug('CWD', process.cwd());
 
 // Get the current directory
 const __filename = fileURLToPath(import.meta.url);
