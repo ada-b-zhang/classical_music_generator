@@ -8,37 +8,45 @@ import {
 } from './types.js';
 import { initializeClient, manageRequests } from './client.js';
 
-
 import path from 'path';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import log from 'electron-log/main.js';
 
-// Optional, initialize the logger for any renderer process
+
+// Configure logging
+log.transports.file.level = 'debug';
+log.transports.console.level = 'debug';
 
 log.info('Log from the main process');
 
-let appPath;
-
-if (app.isPackaged) {
-  // Electron Packaged
-  appPath = "/Applications/bacprop.app/Contents"
-  
-} else {
-  // Dev
-  appPath = app.getAppPath();
-}
-
-log.debug('Current Path:', appPath);
-
-const configPath = path.join(appPath, 'config.json');
-
+// Get the current directory
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const preloadPath = path.resolve(__dirname, '..', 'preload', 'preload.js');
-const indexPath = path.resolve(__dirname, '..', 'renderer', 'index.html');
+// Determine config path based on environment
+let configPath = path.join(__dirname, 'config.json');
+
+// Check if we're in a packaged app
+const isPackaged = app.isPackaged;
+if (isPackaged) {
+  // Try looking for config in the resources directory first
+  const resourceConfigPath = path.join(process.resourcesPath, 'config.json');
+  if (existsSync(resourceConfigPath)) {
+    configPath = resourceConfigPath;
+  }
+}
+
+log.debug('Current Path:', __dirname);
+log.debug('Config path:', configPath);
+
+// Preload and index paths relative to current directory
+const preloadPath = path.join(__dirname, '..', 'preload', 'preload.js');
+const indexPath = path.join(__dirname, '..', 'renderer', 'index.html');
+
+log.debug('Preload path:', preloadPath);
+log.debug('Index path:', indexPath);
 
 interface ClientObj {
   name: string;
@@ -46,8 +54,40 @@ interface ClientObj {
   capabilities: Record<string, any> | undefined;
 }
 
+// Helper to get full path to commands
+// Helper to get full path to commands
+function getFullCommandPath(command: string): string {
+  // Common paths on macOS
+  const commonPaths: Record<string, string[]> = {
+    'npx': ['/opt/homebrew/bin/npx', '/usr/local/bin/npx', '/usr/bin/npx'],
+    'uv': ['/opt/homebrew/bin/uv', '/usr/local/bin/uv', '/usr/bin/uv'],
+    'python': ['/usr/bin/python', '/usr/local/bin/python', '/opt/homebrew/bin/python'],
+    'python3': ['/usr/bin/python3', '/usr/local/bin/python3', '/opt/homebrew/bin/python3']
+  };
+  
+  if (isPackaged && command in commonPaths) {
+    for (const path of commonPaths[command]) {
+      if (existsSync(path)) {
+        log.info(`Using full path for ${command}: ${path}`);
+        return path;
+      }
+    }
+  }
+  
+  return command;
+}
+
+// Helper for relative paths in a packaged app
+function getResourcePath(relativePath: string): string {
+  if (isPackaged) {
+    return path.join(process.resourcesPath, relativePath);
+  }
+  return relativePath;
+}
+
 function readConfig(configPath: string): McpServersConfig | null {
   try {
+    log.debug('Reading config from:', configPath);
     const config = readFileSync(configPath, 'utf8');
     return JSON.parse(config);
   } catch (error) {
@@ -65,6 +105,23 @@ async function initClient(): Promise<ClientObj[]> {
       const clients = await Promise.all(
         Object.entries(config.mcpServers).map(async ([name, serverConfig]) => {
           log.info(`Initializing client for ${name} with config:`, serverConfig);
+          
+          // Modify config for production if needed
+          if (isPackaged) {
+            // Use full path for command
+            serverConfig.command = getFullCommandPath(serverConfig.command);
+            
+            // Fix paths in args if necessary
+            serverConfig.args = serverConfig.args.map((arg: string) => {
+              // For Python scripts or similar resources
+              if (typeof arg === 'string' && arg.endsWith('.py')) {
+                return getResourcePath(`MCP/${path.basename(arg)}`);
+              }
+              return arg;
+            });
+            
+            log.info(`Adjusted config for production:`, serverConfig);
+          }
 
           const timeoutPromise = new Promise<Client>((resolve, reject) => {
             setTimeout(() => {
@@ -84,30 +141,13 @@ async function initClient(): Promise<ClientObj[]> {
       );
 
       log.info('All clients initialized.');
-      // notifier.notify({
-      //   appID: 'DAMN',
-      //   title: "MCP Servers are ready",
-      //   message: "All Clients initialized."
-      // });
-
       return clients;
     } catch (error) {
       log.error('Error during client initialization:', error?.message);
-      // notifier.notify({
-      //   appID: 'AIQL',
-      //   title: 'Client initialization failed',
-      //   message: "Cannot start with current config, " +  error?.message,
-      // });
-
       process.exit(1);
     }
   } else {
     log.error('NO clients initialized.');
-    // notifier.notify({
-    //   appID: 'AIQL',
-    //   title: 'NO clients initialized',
-    //   message: "NO valid JSON config found.",
-    // });
     return [];
   }
 }
@@ -199,4 +239,3 @@ app.whenReady().then(async () => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
-

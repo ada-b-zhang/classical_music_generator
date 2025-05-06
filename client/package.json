@@ -1,62 +1,81 @@
 {
     "name": "bacprop",
     "version": "1.0.0",
-    "author": {
+    "author": 
+    {
         "name": "bacprop",
         "email": "contact@bacprop.com"
     },
     "description": "MCP Client for MLOps",
     "main": "dist/main/main.js",
     "type": "module",
-    "scripts": {
+    "scripts": 
+    {
         "start": "npm run build && electron ./dist/main/main.js",
-        "build": "tsc && copyfiles -u 1 src/**/* -e src/**/*.ts dist",
+        "build": "tsc && copyfiles -f src/preload/preload.js dist/preload/ && copyfiles -f src/main/config.json dist/main/",
         "build-app": "npm run build && electron-builder"
     },
-    "build": {
-        "appId": "com.aiql.chat-mcp",
-        "directories": {
+    "build": 
+    {
+        "appId": "com.bacprop",
+        "directories": 
+        {
             "output": "artifacts"
         },
-        "files": [
-            "**/*"
+        "asarUnpack": 
+        [
+            "node_modules/@modelcontextprotocol/**/*",
+            "bin/**/*"
         ],
-        "extraFiles": [
+        "files": 
+        [
+            "dist/**/*",
+            "node_modules/**/*",
+            "bin/**/*"
+        ],
+        "extraFiles": 
+        [
             {
-                "from": "./src/main/config.json",
+                "from": "config.json",
                 "to": "."
             },
             {
                 "from": "../server/main.py",
-                "to": "MCP/main.py"
+                "to": "Resources/MCP/main.py"
             },
             {
                 "from": "../server/requirements.txt",
-                "to": "MCP/requirements.txt"
+                "to": "Resources/MCP/requirements.txt"
             }
         ],
-        "win": {
+        "win": 
+        {
             "target": "nsis",
             "icon": "icon.ico"
         },
-        "mac": {
+        "mac": 
+        {
             "target": "dmg",
             "icon": "icon.icns"
         },
-        "linux": {
-            "target": [
+        "linux": 
+        {
+            "target": 
+            [
                 "AppImage",
                 "deb",
                 "rpm"
             ],
             "icon": "icon.png"
         },
-        "nsis": {
+        "nsis": 
+        {
             "oneClick": false,
             "allowToChangeInstallationDirectory": true
         }
     },
-    "devDependencies": {
+    "devDependencies": 
+    {
         "@types/node-notifier": "^8.0.5",
         "copyfiles": "^2.4.1",
         "electron": "^35.1.5",
@@ -65,8 +84,11 @@
         "node-notifier": "^10.0.1",
         "typescript": "^5.7.3"
     },
-    "dependencies": {
+    "dependencies": 
+    {
         "@modelcontextprotocol/sdk": "^1.9.0",
+        "@modelcontextprotocol/server-everything": "latest",
+        "@modelcontextprotocol/server-filesystem": "latest",
         "electron-log": "^5.4.0"
     }
 }

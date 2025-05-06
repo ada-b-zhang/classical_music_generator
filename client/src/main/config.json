@@ -1,30 +1,14 @@
 {
     "mcpServers": {
-      "everything": {
-        "command": "npx",
-        "args": [
-          "-y",
-          "@modelcontextprotocol/server-everything"
-        ]
-      },
-      "filesystem": {
-        "command": "npx",
-        "args": [
-          "-y",
-          "@modelcontextprotocol/server-filesystem",
-          "/Users/nicholasbarsi-rhyne/Projects/classical_music_generator/",
-          "/Users/nicholasbarsi-rhyne/Desktop/"
-        ]
-      },
       "demo": {
-        "command": "uv",
+        "command": "/Applications/bacprop.app/Contents/Resources/app.asar.unpacked/bin/uv",
         "args": [
           "run",
           "--with",
           "mcp[cli], requests, midi2audio, pygame",
           "mcp",
           "run",
-          "/Users/nicholasbarsi-rhyne/Projects/classical_music_generator/server/main.py"
+          "/Applications/bacprop.app/Contents/Resources/MCP/main.py"
         ]
       }
     }
