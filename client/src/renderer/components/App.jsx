@@ -1,41 +1,109 @@
-import React from 'react';
-import { GlobalStateProvider } from './GlobalStateContext';
-import Header from './Header';
-import Sidebar from './Sidebar';
-import MainContent from './MainContent';
-import InputArea from './InputArea';
-import LoadingSpinner from './LoadingSpinner';
-import ChatBot from './ChatBot';
-import Snackbar from './Snackbar';
-import Toolbox from './Toolbox';
-import HistoryDialog from './HistoryDialog';
-import PromptsDialog from './PromptsDialog';
-import ResourcesDialog from './ResourcesDialog';
-import AgentBoard from './AgentBoard';
+import React, { useEffect } from 'react';
+import { Box, Container, ThemeProvider, createTheme } from '@mui/material';
+import ChatBox from './components/ChatBox';
+import InputArea from './components/InputArea';
+import HistoryDialog from './components/HistoryDialog';
+import SettingsDialog from './components/SettingsDialog';
+import ResourcesDialog from './components/ResourcesDialog';
+import AgentDialog from './components/AgentDialog';
+import CustomSnackbar from './components/CustomSnackbar';
+import { useStore } from './store';
 
-const AppShell = () => (
-  <div style={{ background: '#121212', minHeight: '100vh', paddingLeft: 60 }}>
-    <Header />
-    <Sidebar />
-    <div style={{ marginTop: 60 }}>
-      <MainContent />
-    </div>
-    <InputArea />
-    <LoadingSpinner />
-    <ChatBot />
-    <Snackbar />
-    <Toolbox />
-    <HistoryDialog />
-    <PromptsDialog />
-    <ResourcesDialog />
-    <AgentBoard />
-  </div>
-);
+// Theme configuration
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: '#1976d2',
+    },
+    teal: {
+      main: '#009688',
+    },
+    brown: {
+      main: '#795548',
+    },
+  },
+});
 
-const App = () => (
-  <GlobalStateProvider>
-    <AppShell />
-  </GlobalStateProvider>
-);
+const App = () => {
+  const {
+    messages,
+    setMessages,
+    isGenerating,
+    createCompletion,
+    addToHistory,
+    snackbar
+  } = useStore();
 
-export default App; 
+  // Effect for handling message changes
+  useEffect(() => {
+    console.log(messages)
+    if (messages.length > 0 && messages[messages.length - 1].role === 'user') {
+      createCompletion(messages);
+    }
+  }, [messages, createCompletion]);
+
+  // Effect for updating history when assistant responds
+  useEffect(() => {
+    if (messages.length > 0 && messages[messages.length - 1].role === 'assistant') {
+      addToHistory(messages);
+    }
+  }, [messages, addToHistory]);
+
+  const handleCopy = (message) => {
+    const textToCopy = Array.isArray(message.content)
+      ? message.content.map(item => item.text).join('\n')
+      : message.content;
+    navigator.clipboard.writeText(textToCopy);
+  };
+
+  const handleDelete = (index) => {
+    setMessages(messages.filter((_, i) => i !== index));
+  };
+
+  const handleReduce = (index) => {
+    setMessages(messages.slice(index));
+  };
+
+  return (
+    <ThemeProvider theme={darkTheme}>
+      <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <Container 
+          sx={{ 
+            flex: 1, 
+            overflow: 'auto',
+            pb: 20, 
+            display: 'flex',
+            flexDirection: 'column'
+          }}
+        >
+          {messages.length > 0 && (
+            <ChatBox
+              messages={messages}
+              onCopy={handleCopy}
+              onDelete={handleDelete}
+              onReduce={handleReduce}
+            />
+          )}
+        </Container>
+
+        <InputArea />
+        
+        {/* Dialogs */}
+        <HistoryDialog />
+        <SettingsDialog />
+        <ResourcesDialog />
+        <AgentDialog />
+        
+        {/* Snackbar for notifications */}
+        <CustomSnackbar 
+          open={snackbar.open} 
+          message={snackbar.message} 
+          type={snackbar.type} 
+        />
+      </Box>
+    </ThemeProvider>
+  );
+};
+
+export default App;

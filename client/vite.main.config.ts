@@ -9,7 +9,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: '.webpack/main',
+    outDir: 'dist/main',
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, 'src/main/main.ts'),
@@ -27,5 +27,14 @@ export default defineConfig({
     emptyOutDir: true,
     sourcemap: true,
     target: 'node16'
-  }
-}); 
+  },
+  plugins: [
+    {
+      name: 'copy-config-after-build',
+      closeBundle() {
+        const { execSync } = require('child_process');
+        execSync('node scripts/postbuild.js');
+      }
+    }
+  ]
+});

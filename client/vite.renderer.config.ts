@@ -6,12 +6,13 @@ export default defineConfig({
   plugins: [react()],
   root: 'src/renderer', // <--- This is important!
   build: {
-    outDir: '../../.webpack/renderer', // relative to root
+    outDir: '../../dist/renderer', // relative to root
     emptyOutDir: true,
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, 'src/renderer/index.html'),
       },
+      external: ['electron'],
     },
   },
   server: {
@@ -23,5 +24,8 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
+  },
+  optimizeDeps: {
+    include: ['zustand', 'zustand/middleware'],
   },
 });

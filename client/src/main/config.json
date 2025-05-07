@@ -12,26 +12,9 @@
         "args": [
           "-y",
           "@modelcontextprotocol/server-filesystem",
-          "/Users/moises_limon/Documents/Github/classical_music_generator/",
-          "/Users/moises_limon/Desktop/"
-        ]
-      },
-      "demo": {
-        "command": "uv",
-        "args": [
-          "run",
-          "--with",
-          "mcp[cli], requests, midi2audio",
-          "mcp",
-          "run",
-          "/Users/moises_limon/Documents/Github/classical_music_generator/server/main.py"
+          "/Users/drewhoang/Documents/",
+          "/Users/drewhoang/Desktop/"
         ]
       }
-    },
-    "appName": "BachPropagation",
-    "version": "1.0.0",
-    "window": {
-      "width": 1200,
-      "height": 800
     }
 }
