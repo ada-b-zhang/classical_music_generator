@@ -8,10 +8,10 @@ from utils import get_predictions
 from google.cloud import storage
 from google.auth.credentials import AnonymousCredentials
 
-storage_client = storage.Client(project="corgi-news")
+storage_client = storage.Client(credentials = AnonymousCredentials(), project="corgi-news")
 bucket = storage_client.bucket("music_gen_all_midi")
-blob = bucket.blob("model_weights/ada_needs_boba.keras")
-blob.download_to_filename("ada_needs_boba.keras")
+blob = bucket.blob("model_weights/music_generation_model.keras")
+blob.download_to_filename("music_generation_model.keras")
 
 # Initialize FastAPI app
 app = FastAPI(title="Prediction API", description="API for making predictions", version="1.0.0")
@@ -33,7 +33,7 @@ async def make_prediction(inputs, parameters=None):
     # This is where you would call your actual model
     
     model = load_model('music_generation_model.keras', safe_mode=False, custom_objects={'helper_function': helper_function,'tf':tf})
-    model = load_model()
+    print("Model loaded correctly!")
     file_path = get_predictions(model)
     
     return {
@@ -44,6 +44,7 @@ async def make_prediction(inputs, parameters=None):
 @app.post("/predict", response_model=PredictionResponse)
 async def predict(request: PredictionRequest):
     try:
+        print(request.inputs)
         result = await make_prediction(request.inputs, request.parameters)
         return result
     except Exception as e:
