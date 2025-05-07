@@ -3,12 +3,19 @@ import numpy as np
 import time
 import pickle
 from midi2audio import FluidSynth
+from google.cloud import storage
+from google.auth.credentials import AnonymousCredentials
 
 
 def read_pickle(file_path):
+    storage_client = storage.Client(credentials = AnonymousCredentials(), project="corgi-news")
+    bucket = storage_client.bucket("music_gen_all_midi")
+    blob = bucket.blob(f"model_weights/{file_path}")
+    blob.download_to_filename(file_path)
+
     with open(file_path, 'rb') as f:
         return pickle.load(f)
-    
+
 def sample_with_temp(preds, temperature):
     if temperature == 0:
         return np.argmax(preds)
@@ -117,6 +124,7 @@ def get_predictions(model, use_attention=True):
                 new_note = note.Note(current_note)
                 new_note.duration = duration.Duration(duration_pattern)
                 new_note.storedInstrument = instrument.Violoncello()
+                print(new_note)
                 chord_notes.append(new_note)
             new_chord = chord.Chord(chord_notes)
             midi_stream.append(new_chord)
@@ -132,7 +140,6 @@ def get_predictions(model, use_attention=True):
             new_note.duration = duration.Duration(duration_pattern)
             new_note.storedInstrument = instrument.Violoncello()
             midi_stream.append(new_note)
-
     midi_stream = midi_stream.chordify()
     timestr = time.strftime("%Y%m%d-%H%M%S")
     new_file = 'output-' + timestr + '.mid'

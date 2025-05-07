@@ -4,10 +4,10 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 from utils import get_predictions
 
-# storage_client = storage.Client(credentials = AnonymousCredentials(), project="corgi-news")
-# bucket = storage_client.bucket("music_gen_all_midi")
-# blob = bucket.blob("model_weights/ada_needs_boba.keras")
-# blob.download_to_filename("ada_needs_boba.keras")
+storage_client = storage.Client(credentials = AnonymousCredentials(), project="corgi-news")
+bucket = storage_client.bucket("music_gen_all_midi")
+blob = bucket.blob("model_weights/music_generation_model.keras")
+blob.download_to_filename("music_generation_model.keras")
 
 def helper_function(x):
     return tf.reduce_sum(x, axis=1)
