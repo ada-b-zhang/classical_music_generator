@@ -190,3 +190,58 @@ async def play_music(file_path: str) -> str:
         
     except Exception as e:
         return f"Error in play_music: {str(e)}"
+    
+
+@mcp.tool()
+def download_generated_music(task_id: str, output_filename: str) -> str:
+    """
+    Downloads the generated music locally.  
+
+    This function checks the status of a music generation task using its task ID.
+    If the task is complete and the music is composed, it downloads the music track
+    and saves it to the user's Music directory with the specified output filename.
+
+    Parameters
+    ----------
+        - task_id (str): The unique identifier for the music generation task.
+        - output_filename (str): The filename to save the downloaded music track as, within the Music directory
+
+
+    Returns
+    ------- 
+        - str: The path to the downloaded music track if successful, or a status message
+               indicating that the composition is still in progress or an error occurred.
+
+    """
+    
+    home_dir = os.path.expanduser("~")
+    music_path = os.path.join(home_dir, "Music")
+    try:
+        response = requests.get(
+            f"{BACKEND_V1_API_URL}/tasks/{task_id}",
+            headers={"Authorization": f"Bearer {BACKEND_API_HEADER_KEY}"},
+        )   
+        with open(os.path.join(music_path, output_filename), "wb") as file:
+            file.write(f"Response: {response}")
+            file.flush()
+
+        if response.status_code == 200:
+            data = response.json()
+            if data['status'] == 'composed':
+                track_url_for_download = data['meta']['track_url']
+                track_response = requests.get(track_url_for_download)
+                track_response.raise_for_status()
+                with open(os.path.join(music_path, output_filename), "wb") as file:
+                    file.write(track_response.content)
+                return os.path.join(music_path, output_filename)
+            
+            else: 
+                return 'Still composing...'
+        else:
+            raise Exception({"error": "Download failed"})
+        
+    except requests.ConnectionError as e:
+        raise Exception({"error": "Could not connect"}) from e
+    except Exception as e:
+        raise Exception({"error": "Failed to make a request"}) from e
+
