@@ -84,15 +84,10 @@ async def create_and_compose(text_prompt: str, output_filename: str):
 
     compose_res = await compose_track(track_meta)
     task_id = compose_res["task_id"]
-    print(f"Started composition task with ID: {task_id}")
 
     generation_meta = await watch_task_status(task_id)
-    print(generation_meta)
     track_url = generation_meta["meta"]["track_url"]
-    print("Downloading track file")
     await handle_track_file(os.path.join(os.getcwd(), output_filename), track_url)
-
-    print(f"Composed! you can find your track as {output_filename}")
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
