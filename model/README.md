@@ -2,7 +2,7 @@
 `docker build -t bachpropagation .`
 
 # Run the dockerfile locally:
-`docker build -t bachpropagation .`
+`docker run -t bachpropagation .`
 
 # Expose the container:
 `docker run -p 8080:8080 bachpropagation`
