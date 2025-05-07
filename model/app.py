@@ -5,7 +5,13 @@ from tensorflow.keras.models import load_model
 import uvicorn
 import tensorflow as tf
 from utils import get_predictions
+from google.cloud import storage
+from google.auth.credentials import AnonymousCredentials
 
+storage_client = storage.Client(project="corgi-news")
+bucket = storage_client.bucket("music_gen_all_midi")
+blob = bucket.blob("model_weights/ada_needs_boba.keras")
+blob.download_to_filename("ada_needs_boba.keras")
 
 # Initialize FastAPI app
 app = FastAPI(title="Prediction API", description="API for making predictions", version="1.0.0")
@@ -27,6 +33,7 @@ async def make_prediction(inputs, parameters=None):
     # This is where you would call your actual model
     
     model = load_model('music_generation_model.keras', safe_mode=False, custom_objects={'helper_function': helper_function,'tf':tf})
+    model = load_model()
     file_path = get_predictions(model)
     
     return {
