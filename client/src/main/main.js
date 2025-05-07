@@ -1,23 +1,14 @@
-// main.ts
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import fs from 'fs';
 
-interface Config {
-  window?: {
-    width: number;
-    height: number;
-  };
-}
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-function readConfig(): Config | null {
+function readConfig() {
   try {
-    // Try production path first
-    let configPath = path.join(app.getAppPath(), 'config.json');
-    if (!fs.existsSync(configPath)) {
-      // Fallback to dev path
-      configPath = path.join(app.getAppPath(), 'src/main/config.json');
-    }
+    const configPath = path.join(__dirname, 'config.json');
     const configData = fs.readFileSync(configPath, 'utf8');
     return JSON.parse(configData);
   } catch (error) {
@@ -26,7 +17,7 @@ function readConfig(): Config | null {
   }
 }
 
-function createWindow(): void {
+function createWindow() {
   const config = readConfig();
   const mainWindow = new BrowserWindow({
     width: config?.window?.width || 1200,
@@ -43,19 +34,18 @@ function createWindow(): void {
     mainWindow.webContents.openDevTools();
   } else {
     // In production, load the built files
-    mainWindow.loadFile(path.join(app.getAppPath(), 'renderer/index.html'));
+    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
   }
 }
 
 app.whenReady().then(() => {
   createWindow();
 
-  app.on('activate', () => {
+  app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 });
 
-app.on('window-all-closed', () => {
+app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit();
-});
-
+}); 

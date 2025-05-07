@@ -1,0 +1,33 @@
+.app {
+  min-height: 100vh;
+  background-color: #121212;
+  color: #ffffff;
+}
+
+.main-content {
+  padding-top: 60px; /* Same as header height */
+  min-height: calc(100vh - 60px);
+  padding: 80px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.content-container {
+  max-width: 800px;
+  width: 100%;
+  text-align: center;
+  padding: 20px;
+}
+
+.content-container h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  font-weight: 300;
+}
+
+.content-container p {
+  font-size: 1.2rem;
+  color: #b3b3b3;
+  margin-bottom: 2rem;
+} 
