@@ -221,7 +221,7 @@ def download_generated_music(task_id: str, output_filename: str) -> str:
             f"{BACKEND_V1_API_URL}/tasks/{task_id}",
             headers={"Authorization": f"Bearer {BACKEND_API_HEADER_KEY}"},
         )   
-        with open(os.path.join(music_path, output_filename), "wb") as file:
+        with open('response.txt', 'a') as file:
             file.write(f"Response: {response}")
             file.flush()
 
