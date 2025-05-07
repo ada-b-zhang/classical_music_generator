@@ -1,12 +1,11 @@
 from mcp.server.fastmcp import FastMCP, Context
 import os
 import requests
-import pygame
-import asyncio
 
 # Create an MCP server
 mcp = FastMCP("AI Sticky Notes", dependencies=["requests"])
-
+BACKEND_V1_API_URL = "https://public-api.beatoven.ai/api/v1"
+BACKEND_API_HEADER_KEY = "XM1bWK10aOaffhAqQtlGRQ"
 NOTES_FILE = os.path.join(os.path.dirname(__file__), "notes.txt")
 
 def ensure_file():
@@ -15,64 +14,76 @@ def ensure_file():
             f.write("")
 
 @mcp.tool()
-def add_note(message: str) -> str:
+def generate_music_through_api(prompt: str) -> str:
     """
-    Append a new note to the sticky note file.
+    Generate music through the Beatoven.ai API based on a text prompt.
+
+    This function takes a text prompt and generates music using the Beatoven.ai API.
+    It handles the composition process, monitors the task status, and downloads the
+    generated audio file.
 
     Args:
-        message (str): The note content to be added.
+        prompt (str): Text description of the music to generate
+        output_filename (str): Filename to save the generated audio as
 
     Returns:
-        str: Confirmation message indicating the note was saved.
+        str: ID of the track, which can be used to download the track later
     """
-    ensure_file()
-    with open(NOTES_FILE, "a") as f:
-        f.write(message + "\n")
-    return "Note saved!"
+    request_json = {"prompt": {"text": prompt}, "format": "wav"}
+    try:
+        response = requests.post(
+            f"{BACKEND_V1_API_URL}/tracks/compose",
+            json=request_json,
+            headers={"Authorization": f"Bearer {BACKEND_API_HEADER_KEY}"},
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            return data
+        else:
+            data = response.json()
+            if not data.get("task_id"):
+                raise Exception(data)
+            return data['track_id']
+    except requests.ConnectionError:
+        raise Exception({"error": "Could not connect to beatoven.ai"})
+    except Exception as e:
+        raise Exception({"error": "Failed to make a request to beatoven.ai"}) from e
+    
 
 @mcp.tool()
-def read_notes() -> str:
+def check_track_status(task_id: str) -> str:
     """
-    Read and return all notes from the sticky note file.
+    Check the status of a music generation task.
+
+    This function queries the Beatoven.ai API to check the status of a music generation task
+    using its task ID. It returns the current status and metadata of the task.
+
+    Args:
+        task_id (str): The ID of the task to check
 
     Returns:
-        str: All notes as a single string separated by line breaks.
-             If no notes exist, a default message is returned.
-    """
-    ensure_file()
-    with open(NOTES_FILE, "r") as f:
-        content = f.read().strip()
-    return content or "No notes yet."
+        str: JSON response containing task status and metadata. Will include track_url when complete.
 
-@mcp.resource("notes://latest")
-def get_latest_note() -> str:
+    Raises:
+        Exception: If there are connection issues or the API request fails
     """
-    Get the most recently added note from the sticky note file.
+    try:
+        response = requests.get(
+            f"{BACKEND_V1_API_URL}/tasks/{task_id}",
+            headers={"Authorization": f"Bearer {BACKEND_API_HEADER_KEY}"},
+        )    
+        if response.status_code == 200:
+            data = response.json()
+            return data['status']
+        else:
+            raise Exception({"error": "Composition failed"})
+    except requests.ConnectionError as e:
+        raise Exception({"error": "Could not connect"}) from e
+    except Exception as e:
+        raise Exception({"error": "Failed to make a request"}) from e
 
-    Returns:
-        str: The last note entry. If no notes exist, a default message is returned.
-    """
-    ensure_file()
-    with open(NOTES_FILE, "r") as f:
-        lines = f.readlines()
-    return lines[-1].strip() if lines else "No notes yet."
 
-@mcp.prompt()
-def note_summary_prompt() -> str:
-    """
-    Generate a prompt asking the AI to summarize all current notes.
-
-    Returns:
-        str: A prompt string that includes all notes and asks for a summary.
-             If no notes exist, a message will be shown indicating that.
-    """
-    ensure_file()
-    with open(NOTES_FILE, "r") as f:
-        content = f.read().strip()
-    if not content:
-        return "There are no notes yet."
-
-    return f"Summarize the current notes: {content}"
 
 @mcp.tool()
 def read_music_file() -> str:
@@ -145,31 +156,6 @@ def generate_new_music(text: str) -> str:
     except Exception as e:
         return f"Error making prediction: {str(e)}"
     
-# @mcp.tool()
-# async def play_music(file_path: str) -> str:
-#     """
-#     Play a music file.
-#     """
-#     # Initialize pygame mixer
-#     pygame.mixer.init()
-    
-#     # Load the sound file
-#     sound = pygame.mixer.Sound(f'/Users/nicholasbarsi-rhyne/Projects/classical_music_generator/model/{file_path}')
-#     # sound = pygame.mixer.Sound(file_path)
-
-#     # Play the sound
-#     channel = sound.play()
-
-#     start_time = pygame.time.get_ticks()
-#     duration = int(sound.get_length() * 1000)  # Convert to milliseconds
-    
-#     # Wait for at most the duration of the sound
-#     while channel.get_busy() and pygame.time.get_ticks() - start_time < duration:
-#         await asyncio.sleep(0.1)  # Short sleep to prevent CPU hogging
-    
-#     # We don't quit pygame here
-
-#     return "Music played successfully!"
 
 
 @mcp.tool()
