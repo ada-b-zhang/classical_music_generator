@@ -1,11 +1,6 @@
 from mcp.server.fastmcp import FastMCP, Context
 import os
 import requests
-import pygame
-import asyncio
-import aiohttp
-import aiofiles
-import sys
 
 # Create an MCP server
 mcp = FastMCP("AI Sticky Notes", dependencies=["requests"])
@@ -19,7 +14,7 @@ def ensure_file():
             f.write("")
 
 @mcp.tool()
-def generate_music_through_api(prompt: str, output_filename: str) -> str:
+def generate_music_through_api(prompt: str) -> str:
     """
     Generate music through the Beatoven.ai API based on a text prompt.
 

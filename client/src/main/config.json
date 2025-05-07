@@ -1,14 +1,14 @@
 {
     "mcpServers": {
       "demo": {
-        "command": "/Applications/bacprop.app/Contents/Resources/app.asar.unpacked/bin/uv",
+        "command": "/Applications/bachprop.app/Contents/Resources/app.asar.unpacked/bin/uv",
         "args": [
           "run",
           "--with",
           "mcp[cli], requests, midi2audio, pygame",
           "mcp",
           "run",
-          "/Applications/bacprop.app/Contents/Resources/MCP/main.py"
+          "/Applications/bachprop.app/Contents/Resources/MCP/main.py"
         ]
       }
     }

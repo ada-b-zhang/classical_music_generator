@@ -1,10 +1,10 @@
 {
-    "name": "bacprop",
+    "name": "bachprop",
     "version": "1.0.0",
     "author": 
     {
-        "name": "bacprop",
-        "email": "contact@bacprop.com"
+        "name": "bachprop",
+        "email": "contact@bachprop.com"
     },
     "description": "MCP Client for MLOps",
     "main": "dist/main/main.js",
@@ -12,12 +12,12 @@
     "scripts": 
     {
         "start": "npm run build && electron ./dist/main/main.js",
-        "build": "tsc && copyfiles -f src/preload/preload.js dist/preload/ && copyfiles -f src/main/config.json dist/main/",
+        "build": "tsc && copyfiles -f src/preload/preload.js dist/preload/ && copyfiles -f src/main/config.json dist/main/ && copyfiles -u 2 src/renderer/* dist/renderer",
         "build-app": "npm run build && electron-builder"
     },
     "build": 
     {
-        "appId": "com.bacprop",
+        "appId": "com.bachprop",
         "directories": 
         {
             "output": "artifacts"
