@@ -4,6 +4,9 @@
 # Run the dockerfile locally:
 `docker build -t bachpropagation .`
 
+# Expose the container:
+`docker run -p 8080:8080 bachpropagation`
+
 # Give yourself permissions:
 ```
 sudo gcloud services enable run.googleapis.com
