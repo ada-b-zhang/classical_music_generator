@@ -2,11 +2,12 @@ from mcp.server.fastmcp import FastMCP, Context
 import os
 import requests
 import time
-
+from google.cloud import storage
+from google.auth.credentials import AnonymousCredentials
 # Create an MCP server
 mcp = FastMCP("AI Sticky Notes", dependencies=["requests"])
 BACKEND_V1_API_URL = "https://public-api.beatoven.ai/api/v1"
-BACKEND_API_HEADER_KEY = "XM1bWK10aOaffhAqQtlGRQ"
+BACKEND_API_HEADER_KEY = "F2-8WHlTpIZQq60y5slC3w"
 NOTES_FILE = os.path.join(os.path.dirname(__file__), "notes.txt")
 
 def ensure_file():
@@ -116,7 +117,7 @@ def read_music_file() -> str:
         return f"Error accessing Music folder: {str(e)}"
 
 @mcp.tool()
-def generate_new_music(text: str) -> str:
+def generate_music_from_adettes(text: str) -> str:
     """
     Get predictions from the model for a given text.
 
@@ -129,6 +130,9 @@ def generate_new_music(text: str) -> str:
     try:
         # Convert text input to float values (you may need to adjust this based on your actual requirements)
         # This is a simple example that converts characters to ASCII values
+        storage_client = storage.Client(credentials=AnonymousCredentials(), project="corgi-news")
+        bucket = storage_client.bucket("music_gen_all_midi")
+
         inputs = [float(ord(c)) for c in text]
         
         # Prepare the request payload
@@ -139,7 +143,7 @@ def generate_new_music(text: str) -> str:
         
         # Make request to the FastAPI server
         response = requests.post(
-            "http://localhost:8000/predict",
+            "https://bachpropagation-83388949706.us-west2.run.app/predict",
             json=payload
         )
         
@@ -148,9 +152,14 @@ def generate_new_music(text: str) -> str:
         
         # Parse the response
         result = response.json()
+
+        file_path = result['file_path']
+        blob = bucket.blob(f"music/{file_path}")
+        music_path = os.path.expanduser("~/Music")
+        blob.download_to_filename(os.path.join(music_path, file_path))
         
         # Format the response for display
-        return f"Music was generated and saved to {result['file_path']}"
+        return f"Music was generated and saved to {os.path.join(music_path, file_path)}"
     
     except requests.exceptions.ConnectionError:
         return "Error: Could not connect to the prediction server. Make sure it's running on port 8000."
@@ -195,7 +204,7 @@ def download_generated_music(task_id: str, output_filename: str) -> str:
 
     """
     
-    music_path = os.path.expanduser("~/Music")
+    music_path = os.path.expanduser("~/Downloads")
     try:
         response = requests.get(
             f"{BACKEND_V1_API_URL}/tasks/{task_id}",
