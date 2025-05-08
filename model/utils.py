@@ -4,11 +4,10 @@ import time
 import pickle
 from midi2audio import FluidSynth
 from google.cloud import storage
-from google.auth.credentials import AnonymousCredentials
 
 
 def read_pickle(file_path):
-    storage_client = storage.Client(credentials = AnonymousCredentials(), project="corgi-news")
+    storage_client = storage.Client(project="corgi-news")
     bucket = storage_client.bucket("music_gen_all_midi")
     blob = bucket.blob(f"model_weights/{file_path}")
     blob.download_to_filename(file_path)

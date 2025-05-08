@@ -1,19 +1,14 @@
 from mcp.server.fastmcp import FastMCP, Context
 import os
 import requests
-import time
 from google.cloud import storage
 from google.auth.credentials import AnonymousCredentials
+
 # Create an MCP server
 mcp = FastMCP("AI Sticky Notes", dependencies=["requests"])
 BACKEND_V1_API_URL = "https://public-api.beatoven.ai/api/v1"
 BACKEND_API_HEADER_KEY = "F2-8WHlTpIZQq60y5slC3w"
-NOTES_FILE = os.path.join(os.path.dirname(__file__), "notes.txt")
 
-def ensure_file():
-    if not os.path.exists(NOTES_FILE):
-        with open(NOTES_FILE, "w") as f:
-            f.write("")
 
 @mcp.tool()
 def generate_music_through_api(prompt: str) -> str:
@@ -204,15 +199,13 @@ def download_generated_music(task_id: str, output_filename: str) -> str:
 
     """
     
-    music_path = os.path.expanduser("~/Downloads")
+    
+    music_path = os.path.expanduser("~/Music")
     try:
         response = requests.get(
             f"{BACKEND_V1_API_URL}/tasks/{task_id}",
             headers={"Authorization": f"Bearer {BACKEND_API_HEADER_KEY}"},
         )   
-        with open('response.txt', 'a') as file:
-            file.write(f"Response: {response}")
-            file.flush()
 
         if response.status_code == 200:
             data = response.json()
@@ -222,7 +215,6 @@ def download_generated_music(task_id: str, output_filename: str) -> str:
                 track_response.raise_for_status()
                 with open(os.path.join(music_path, output_filename), "wb") as file:
                     file.write(track_response.content)
-                time.sleep(1)
                 return os.path.join(music_path, output_filename)
             
             else: 

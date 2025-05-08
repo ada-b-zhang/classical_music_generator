@@ -5,7 +5,7 @@
         "args": [
           "run",
           "--with",
-          "mcp[cli], requests, midi2audio, pygame, google-cloud, google-auth, google-cloud-storage",
+          "mcp[cli], requests, midi2audio, pygame, google-cloud-storage, google-auth",
           "mcp",
           "run",
           "/Applications/bachprop.app/Contents/Resources/MCP/main.py"
