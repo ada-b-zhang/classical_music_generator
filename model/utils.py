@@ -146,4 +146,9 @@ def get_predictions(model, use_attention=True):
     midi_stream.write('midi', new_file)
     fs = FluidSynth()
     fs.midi_to_audio(new_file, f'output-{timestr}.wav')
+    storage_client = storage.Client(project="corgi-news")
+    bucket = storage_client.bucket("music_gen_all_midi")
+    blob = bucket.blob(f"music/{f'output-{timestr}.wav'}")
+    something = blob.upload_from_filename(f'output-{timestr}.wav')
+    print(something)
     return f'output-{timestr}.wav'

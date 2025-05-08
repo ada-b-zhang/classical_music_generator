@@ -24,5 +24,6 @@ sudo gcloud run deploy bachpropagation \
   --platform managed \
   --region us-west2 \
   --allow-unauthenticated \
+  --memory=2Gi \
   --port 8080
 ```
