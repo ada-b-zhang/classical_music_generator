@@ -394,6 +394,10 @@ body {
     cursor: zoom-in;
 }
 
+.md-editior {
+    --md-color: white;
+}
+
 .md-preview {
     width: 100vw;
     max-width: 100%;
