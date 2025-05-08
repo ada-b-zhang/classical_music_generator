@@ -4,7 +4,7 @@ Virtual Environment (Mac)
 
 ``` bash
 conda env create -f environment.yml
-conda activate limewire
+conda activate MGP
 ```
 
 Note: When pulling changes from the environment.yml, ensure you update your virtual environment
@@ -35,4 +35,42 @@ Run Mongo Locally
 Stop Mongo locally
 ``` bash
 ./stop_mongo_local.sh
+```
+
+Updated the config file, for the mcp server to work
+```bash
+./install.sh
+```
+
+Frontend
+```bash
+cd client
+npm install
+npm run start
+```
+
+Server for model inference
+```bash
+cd model
+python app.py
+```
+
+Getting chat to work
+In the root of the project directory, must have a keys.json
+```json
+{
+  "chatbotStore": {
+          "apiKey": "OPENAI_KEY_HERE",
+          "url": "https://api.openai.com",
+          "path": "/v1/chat/completions",
+          "model": "gpt-4o",
+          "mcp": true
+        },
+        "defaultChoiceStore": {
+          "model": [
+            "gpt-4",
+            "gpt-4-turbo"
+          ]
+        }
+}
 ```

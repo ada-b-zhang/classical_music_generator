@@ -1,0 +1,94 @@
+{
+    "name": "bachprop",
+    "version": "1.0.0",
+    "author": 
+    {
+        "name": "bachprop",
+        "email": "contact@bachprop.com"
+    },
+    "description": "MCP Client for MLOps",
+    "main": "dist/main/main.js",
+    "type": "module",
+    "scripts": 
+    {
+        "start": "npm run build && electron ./dist/main/main.js",
+        "build": "tsc && copyfiles -u 2 src/preload/preload.js dist/preload && copyfiles -u 2 src/main/config.json dist/main && copyfiles -u 2 src/renderer/**/* dist/renderer && copyfiles -u 2 src/renderer/css/style.css dist/renderer/css && copyfiles -u 2 src/renderer/js/app.js dist/renderer/js",
+        "build-app": "npm run build && electron-builder"
+    },
+    "build": 
+    {
+        "appId": "com.bachprop",
+        "directories": 
+        {
+            "output": "artifacts"
+        },
+        "asarUnpack": 
+        [
+            "node_modules/@modelcontextprotocol/**/*",
+            "bin/**/*"
+        ],
+        "files": 
+        [
+            "dist/**/*",
+            "node_modules/**/*",
+            "bin/**/*"
+        ],
+        "extraFiles": 
+        [
+            {
+                "from": "config.json",
+                "to": "."
+            },
+            {
+                "from": "../server/main.py",
+                "to": "Resources/MCP/main.py"
+            },
+            {
+                "from": "../server/requirements.txt",
+                "to": "Resources/MCP/requirements.txt"
+            }
+        ],
+        "win": 
+        {
+            "target": "nsis",
+            "icon": "icon.ico"
+        },
+        "mac": 
+        {
+            "target": "dmg",
+            "icon": "icon.icns"
+        },
+        "linux": 
+        {
+            "target": 
+            [
+                "AppImage",
+                "deb",
+                "rpm"
+            ],
+            "icon": "icon.png"
+        },
+        "nsis": 
+        {
+            "oneClick": false,
+            "allowToChangeInstallationDirectory": true
+        }
+    },
+    "devDependencies": 
+    {
+        "@types/node-notifier": "^8.0.5",
+        "copyfiles": "^2.4.1",
+        "electron": "^35.1.5",
+        "electron-builder": "^25.1.8",
+        "electron-debug": "^4.1.0",
+        "node-notifier": "^10.0.1",
+        "typescript": "^5.7.3"
+    },
+    "dependencies": 
+    {
+        "@modelcontextprotocol/sdk": "^1.9.0",
+        "@modelcontextprotocol/server-everything": "latest",
+        "@modelcontextprotocol/server-filesystem": "latest",
+        "electron-log": "^5.4.0"
+    }
+}

@@ -1,0 +1,8 @@
+fastapi==0.75.0
+uvicorn==0.17.6
+pydantic==1.10.22
+tensorflow==2.19.0
+keras==3.9.2
+google-cloud-storage
+music21
+midi2audio
