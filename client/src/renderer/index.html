@@ -1998,72 +1998,75 @@
                             if (Object.keys(last.tool_calls[0]).length === 0) {
                                 delete last.tool_calls
                                 return
-                            } else {
-                                let tool_called = false
-                                console.log(last.tool_calls)
+                            }
 
-                                const callNextTool = async (toolCalls, index) => {
-                                    if (index >= toolCalls.length) {
-                                        return;
-                                    }
+                            let tool_called = false
+                            console.log(last.tool_calls)
 
-                                    const tool_call = toolCalls[index];
+                            const callNextTool = async (toolCalls, index) => {
+                                if (index >= toolCalls.length) {
+                                    return;
+                                }
 
-                                    try {
-                                        const result = await mcpStore.callTool(
-                                            tool_call.function.name,
-                                            tool_call.function.arguments
-                                        );
+                                const tool_call = toolCalls[index];
 
-                                        console.log("Result", result)
+                                try {
+                                    const result = await mcpStore.callTool(
+                                        tool_call.function.name,
+                                        tool_call.function.arguments
+                                    );
 
-                                        console.log("Tool Calls", tool_call.function)
-                                        if (tool_call.function.name === "play_music") {
-                                            console.log("Playing music", tool_call)
-                                            const audioPath = result.content[0].text;
-                                            const audioURL = `file://${audioPath}`;
+                                    console.log("Result", result)
 
-                                            this.conversation.push({
-                                                role: "user",
-                                                content: tool_call.function.name,
-                                                tool_call_id: tool_call.id
-                                            });
+                                    console.log("Tool Calls", tool_call.function)
+                                    if (tool_call.function.name === "play_music") {
+                                        console.log("Playing music", tool_call)
+                                        const audioPath = result.content[0].text;
+                                        const audioURL = `file://${audioPath}`;
 
-                                            this.conversation.push({
-                                                role: "assistant",
-                                                content: "Now playing your song...",
-                                                type: "audio",
-                                                audioURL: audioURL,
-                                                tool_call_id: tool_call.id
-                                            });
-                                        }
+                                        // Add tool response
+                                        this.conversation.push({
+                                            role: "tool",
+                                            content: JSON.stringify({
+                                                status: "success",
+                                                path: audioPath
+                                            }),
+                                            tool_call_id: tool_call.id
+                                        });
 
-                                        // console.log("Results", result)
-
+                                        // Add assistant response with audio
+                                        this.conversation.push({
+                                            role: "assistant",
+                                            content: "Now playing your song...",
+                                            type: "audio",
+                                            audioURL: audioURL
+                                        });
+                                    } else {
+                                        // Handle other tool responses
                                         if (result.content) {
                                             this.contentConvert(result.content, tool_call.id).forEach(item => {
                                                 this.conversation.push(item);
                                             });
-                                            tool_called = true;
                                         }
-
-                                        await callNextTool(toolCalls, index + 1);
-                                    } catch (error) {
-                                        const result = mcpStore.packReturn(`Error calling tool: ${error}`)
-                                        this.conversation.push({
-                                            role: "tool",
-                                            content: result.content,
-                                            tool_call_id: tool_call.id
-                                        });
-                                        tool_called = true;
                                     }
-                                };
+                                    tool_called = true;
 
-                                await callNextTool(last.tool_calls, 0);
-
-                                if (tool_called) {
-                                    this.startInference()
+                                    await callNextTool(toolCalls, index + 1);
+                                } catch (error) {
+                                    const result = mcpStore.packReturn(`Error calling tool: ${error}`)
+                                    this.conversation.push({
+                                        role: "tool",
+                                        content: result.content,
+                                        tool_call_id: tool_call.id
+                                    });
+                                    tool_called = true;
                                 }
+                            };
+
+                            await callNextTool(last.tool_calls, 0);
+
+                            if (tool_called) {
+                                this.startInference()
                             }
                         },
                         contentConvert: function (content, toolCallId) {
