@@ -9,97 +9,7 @@
     <title>BachPropagation</title>
 </head>
 
-<style>
-    ::-webkit-scrollbar {
-        display: none;
-    }
-
-    .loading-container {
-        all: initial;
-        position: fixed;
-        top: calc(50% - 35px);
-        left: calc(50% - 35px);
-        display: flex;
-        width: 70px;
-        height: 70px;
-        border-radius: 100%;
-        overflow: hidden;
-
-        background:
-            linear-gradient(#121212, #121212) padding-box,
-            conic-gradient(from 0deg,
-                #ff4b4b,
-                #ff0080fb,
-                #b46aff,
-                #0000ff,
-                #4af7f7,
-                #96ff96,
-                #fdfd97,
-                white,
-                #ffc183,
-                #ff7d7d) border-box;
-        border: 2px solid transparent;
-        animation: spin 1s linear infinite, glow 2s ease-in-out infinite;
-    }
-
-    .loading-layer {
-        padding: 1px;
-        position: absolute;
-        border-radius: 50%;
-        width: 100%;
-        height: 100%;
-        border: 1.5px solid transparent;
-        background:
-            linear-gradient(#121212, #121212) padding-box,
-            conic-gradient(from 0deg,
-                #ff4b4b,
-                #ff0080fb,
-                #b46aff,
-                #0000ff,
-                #4af7f7,
-                #96ff96,
-                #fdfd97,
-                #ffffff,
-                #ffc183,
-                #ff7d7d) border-box;
-        animation: spin 2s linear infinite;
-    }
-
-    /* Layer Variants */
-    .layer2 {
-        width: 60%;
-        height: 60%;
-        top: 20%;
-        left: 20%;
-        opacity: 0.5;
-        animation-duration: 2s;
-    }
-
-
-
-    @keyframes spin {
-        100% {
-            transform: rotate(360deg);
-        }
-    }
-
-    @keyframes glow {
-
-        0%,
-        100% {
-            box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0.2);
-        }
-
-        50% {
-            box-shadow: 0 0 40px 20px rgba(255, 255, 255, 0.4);
-        }
-    }
-
-
-    body {
-        background-color: #121212;
-    }
-</style>
+<style href="style.css"></style>
 
 
 
@@ -158,6 +68,7 @@
         position: relative;
         background-color: #121212;
         color: white;
+        padding-top: 160px;
     }
 
     .fill-area {
@@ -177,41 +88,149 @@
     }
 
     .input-area {
-        background-color: #1E1E1E;
-        display: flex;
-        padding-inline: 21.5px;
-        margin-inline: 21.5px;
-        width: 100%;
         position: fixed;
-        left: 50%;
-        transform: translate(-50%);
         bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: #1E1E1E;
+        padding: 16px 21.5px;
+        z-index: 100;
         color: white;
+        display: flex;
+        justify-content: center;
 
         .input-panel {
             flex: 1;
-            border-top: 5px solid #1E1E1E;
             max-width: 1280px;
-            border-radius: 5px;
-            margin: 0 auto;
+            border-radius: 8px;
             background-color: #1E1E1E;
+            border-top: 5px solid #1E1E1E;
+            margin: 0 auto;
         }
 
-        .input-box textarea {
-            margin-bottom: 1px;
-            background-color: #2D2D2D;
-            color: white;
-        }
+        .input-box {
+            display: flex;
+            gap: 8px;
+            background-color: #2C2C2C;
+            border-radius: 8px;
+            padding: 8px;
+            width: 100%;
 
-        .input-box textarea::-webkit-scrollbar {
-            display: none;
+            .v-input__control {
+                width: 100%;
+            }
+
+            textarea {
+                flex: 1;
+                background: none;
+                border: none;
+                color: white;
+                font-size: 1em;
+                resize: none;
+                min-height: 24px;
+                max-height: 200px;
+                padding: 8px;
+                outline: none;
+
+                &::placeholder {
+                    color: #888;
+                }
+
+                &::-webkit-scrollbar {
+                    display: none;
+                }
+            }
         }
 
         .input-icon {
             margin: 0 10px 34px 10px;
             color: white;
         }
+
+        .drop-zone {
+            border: 2px dashed transparent;
+            border-radius: 8px;
+            transition: border-color 0.2s;
+
+            &.dragging {
+                border-color: #1976d2;
+            }
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+        }
+
+        .file-button,
+        .send-button {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 1.2em;
+            transition: all 0.2s;
+
+            &:hover {
+                background-color: #3C3C3C;
+                color: white;
+            }
+
+            &:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+        }
+
+        .image-preview {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            overflow-x: auto;
+            padding: 8px 0;
+        }
+
+        .preview-item {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            flex-shrink: 0;
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 4px;
+            }
+
+            .remove-image {
+                position: absolute;
+                top: -8px;
+                right: -8px;
+                background-color: #ff4444;
+                color: white;
+                border: none;
+                border-radius: 50%;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                font-size: 16px;
+                line-height: 1;
+                padding: 0;
+
+                &:hover {
+                    background-color: #ff0000;
+                }
+            }
+        }
     }
+
 
     .chat-images {
         width: 25px;
@@ -265,6 +284,7 @@
         z-index: 1;
         padding: 10px;
         margin-bottom: 1px;
+
     }
 
     .chat-message::before {
@@ -273,24 +293,9 @@
         inset: 0;
         padding: 1px;
         border-radius: 4px;
-        background: linear-gradient(45deg,
-                #ff4b4b,
-                #ff0080,
-                #b46aff,
-                #0000ff,
-                #4af7f7,
-                #96ff96,
-                #fdfd97,
-                #ffffff,
-                #ffc183,
-                #ff7d7d);
         background-size: 400% 400%;
-        -webkit-mask:
-            linear-gradient(#fff 0 0) content-box,
-            linear-gradient(#fff 0 0);
         -webkit-mask-composite: xor;
         mask-composite: exclude;
-        animation: rotate 10s ease infinite, pulse 3s ease-in-out infinite;
         z-index: -1;
     }
 
@@ -301,22 +306,16 @@
         background-color: #121212;
         color: white;
         margin-bottom: 10px;
+        padding-top: 120px;
     }
 
     /* Alternative implementation (if the above doesn't work well in all browsers) */
     .chat-message-alt {
         border: 1px solid transparent;
         border-image: linear-gradient(45deg,
-                #ff4b4b,
-                #ff0080,
-                #b46aff,
-                #0000ff,
-                #4af7f7,
-                #96ff96,
-                #fdfd97,
-                #ffffff,
-                #ffc183,
-                #ff7d7d) 1;
+                #D86FFF,
+                #4B0082,
+                #1C003D) 1;
         animation: rotate 10s ease infinite, pulse 3s ease-in-out infinite;
     }
 
@@ -345,19 +344,19 @@
 
     .toolbox-button {
         position: fixed;
-        background-color: #1867C0;
+        background-color: #D86FFF;
         bottom: 194px;
         right: -46px;
         z-index: 999;
         padding: 0.5rem 1rem;
         border-top-left-radius: 0.5rem;
         border-bottom-left-radius: 0.5rem;
-        box-shadow: 1px 1px 9px #1867C0;
+        box-shadow: 1px 1px 9px #1C003D;
         transition: all 0.5s;
         cursor: pointer;
 
         &:hover {
-            box-shadow: 1px 1px 18px #1867C0;
+            box-shadow: 1px 1px 18px #4B0082;
             right: 0px;
             transition: all 0.5s;
         }
@@ -402,7 +401,7 @@
     }
 
     .bgc {
-        background-color: lightblue;
+        background-color: #D86FFF;
     }
 
     body {
@@ -437,12 +436,87 @@
     ::-webkit-scrollbar-thumb:hover {
         background-color: grey;
     }
+
+    .header-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background-color: #1E1E1E;
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        z-index: 1000;
+        column-gap: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .header-logo {
+        height: 40px;
+        margin-right: 15px;
+    }
+
+    .header-title {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    #app>.v-app {
+        padding-top: 60px;
+    }
+
+    .floating-speed-dial {
+        position: fixed;
+        bottom: 50%;
+        left: 20px;
+        z-index: 1000;
+    }
 </style>
 
 
 <body>
     <div id="app" v-cloak>
+        <div class="header-bar">
+            <img src="logo.png" style="width: 50px; height:50px">
+            <h1 class="header-title">BachPropagation</h1>
+        </div>
+
+        <div class="floating-speed-dial">
+            <v-speed-dial transition="expand-transition" offset="10">
+                <template v-slot:activator="{ props: activatorProps }">
+                    <v-btn v-bind="activatorProps" size="medium" class="input-icon"
+                        style="padding: 10px; font-size: 20px">
+                        🛠️
+                    </v-btn>
+                </template>
+                <v-btn key="4" variant="elevated" @click="settingStore.initDialog"
+                    v-tooltip:end="$t('$vuetify.dataIterator.i.title')" style="padding: 10px; font-size: 20px; height: 100%;
+    border-radius: 30px; background-color: #D86FFF"> 🔑
+                </v-btn>
+                <v-btn @click="settingStore.agentDialog = true" variant="elevated"
+                    v-tooltip:end="$t('$vuetify.dataIterator.a.title')" style="padding: 10px; font-size: 20px; height: 100%;
+    border-radius: 30px;  background-color: #D86FFF"> 🤖
+                </v-btn>
+                <v-btn v-if="mcpStore.getServers" @click="resourceStore.resourceDialog = true" variant="elevated"
+                    v-tooltip:end="$t('$vuetify.dataIterator.r.title')" style="padding: 10px; font-size: 20px; height: 100%;
+    border-radius: 30px;  background-color: #D86FFF"> 🛢
+                </v-btn>
+                <v-badge key="1" :content="historyStore.conversation.length" color="info" max="99" location='top left'>
+                    <v-btn variant="elevated" @click="settingStore.configHistory = true"
+                        v-tooltip:end="$t('$vuetify.dataIterator.q.title')" style="padding: 10px; font-size: 20px; height: 100%;
+    border-radius: 30px;  background-color: #D86FFF"> 📜
+                    </v-btn>
+                </v-badge>
+            </v-speed-dial>
+        </div>
+
+
         <v-app>
+
+
             <v-container v-show="messageStore.conversation.length === 0">
             </v-container>
             <v-container v-show="messageStore.conversation.length > 0" class="chat-bot">
@@ -453,67 +527,52 @@
             <div class="input-area">
                 <v-sheet elevation="0" class="input-panel d-flex align-end px-1">
                     <v-speed-dial transition="expand-transition" offset="10">
-                        <template v-slot:activator="{ props: activatorProps }">
-                            <v-btn v-bind="activatorProps" size="small" icon="mdi-cog" absolute
-                                class="input-icon"></v-btn>
-                        </template>
-                        <v-btn key="4" variant="elevated" @click="settingStore.initDialog" icon="mdi-api"
-                            v-tooltip:end="$t('$vuetify.dataIterator.i.title')">
-                        </v-btn>
-                        <v-btn @click="settingStore.agentDialog = true" variant="elevated" icon="mdi-account-supervisor"
-                            v-tooltip:end="$t('$vuetify.dataIterator.a.title')">
-                        </v-btn>
-                        <v-btn v-if="mcpStore.getServers" @click="resourceStore.resourceDialog = true"
-                            variant="elevated" icon="mdi-database" v-tooltip:end="$t('$vuetify.dataIterator.r.title')">
-                        </v-btn>
-                        <v-badge key="1" :content="historyStore.conversation.length" color="info" max="99"
-                            location='top left'>
-                            <v-btn variant="elevated" icon="mdi-list-box" @click="settingStore.configHistory = true"
-                                v-tooltip:end="$t('$vuetify.dataIterator.q.title')">
-                            </v-btn>
-                        </v-badge>
+
                     </v-speed-dial>
                     <v-container>
                         <v-row>
-                            <v-textarea class="input-box" dirty color="primary" type="text" variant="solo" counter
-                                clearable @keydown="messageStore.handleKeydown" v-model="messageStore.userMessage"
-                                :label="" @focus="settingStore.setInputRow(2,0)" @blur="settingStore.setInputRow(1,150)"
-                                :rows="settingStore.inputRow" auto-grow max-rows="15">
-                                <template v-slot:prepend-inner>
-                                    <v-container>
-                                        <v-row>
-                                            <v-img v-if="messageStore.base64" class="chat-images mt-1"
-                                                :src="messageStore.base64" @click="messageStore.images=[]"></v-img>
-                                            <v-file-input v-else @click.stop accept="image/*" hide-input
-                                                v-model="messageStore.images"
-                                                prepend-icon="mdi-plus-circle-outline"></v-file-input>
-                                        </v-row>
-                                    </v-container>
-                                </template>
-                            </v-textarea>
+                            <div class="input-box">
+                                <v-textarea class="input-box" dirty color="primary" type="text" variant="solo" counter
+                                    clearable @keydown="messageStore.handleKeydown" v-model="messageStore.userMessage"
+                                    :label="" @focus="settingStore.setInputRow(2,0)"
+                                    @blur="settingStore.setInputRow(1,150)" :rows="settingStore.inputRow" auto-grow
+                                    max-rows="15">
+                                    <template v-slot:prepend-inner>
+                                        <v-container>
+                                            <v-row>
+                                                <v-img v-if="messageStore.base64" class="chat-images mt-1"
+                                                    :src="messageStore.base64" @click="messageStore.images=[]"></v-img>
+                                                <v-file-input v-else @click.stop accept="image/*" hide-input
+                                                    v-model="messageStore.images"
+                                                    prepend-icon="mdi-plus-circle-outline"></v-file-input>
+                                            </v-row>
+                                        </v-container>
+                                    </template>
+                                </v-textarea>
+                            </div>
                         </v-row>
                     </v-container>
                     <div class="input-icon">
-                        <v-btn v-if="messageStore.userMessage" size="small" color="primary" variant="elevated"
+                        <v-btn v-if="messageStore.userMessage" size="small" style="background-color: #D86FFF" variant="elevated"
                             @click="messageStore.sendMessage" icon="mdi-arrow-up">
                         </v-btn>
-                        <v-btn v-else-if="messageStore.generating" size="small" color="primary" variant="elevated"
+                        <v-btn v-else-if="messageStore.generating" size="small" style="background-color: #D86FFF" variant="elevated"
                             @click="messageStore.stop" icon="mdi-stop"></v-btn>
                         <v-speed-dial v-else-if="messageStore.conversation.length > 0" location="bottom center"
                             transition="expand-transition">
                             <template v-slot:activator="{ props: activatorProps }">
                                 <v-btn v-bind="activatorProps" size="small" icon="mdi-dots-horizontal"
-                                    color="primary"></v-btn>
+                                style="background-color: #D86FFF"></v-btn>
                             </template>
-                            <v-btn key="2" size="small" color="primary" variant="elevated"
+                            <v-btn key="2" size="small" style="background-color: #D86FFF" variant="elevated"
                                 @click="messageStore.resendMessage" icon="mdi-autorenew"
                                 v-tooltip:start="$t('$vuetify.dataIterator.g.reg')">
                             </v-btn>
-                            <v-btn key="1" color="primary" variant="elevated" @click="messageStore.init()"
+                            <v-btn key="1"style="background-color: #D86FFF" variant="elevated" @click="messageStore.init()"
                                 icon="mdi-pencil-plus" v-tooltip:start="$t('$vuetify.dataIterator.g.new')">
                             </v-btn>
                         </v-speed-dial>
-                        <v-btn v-else size="small" :color="mcpStore.getServers ? 'primary': 'grey'" variant="elevated"
+                        <v-btn v-else size="small" :color="mcpStore.getServers ? '#D86FFF': 'grey'" variant="elevated"
                             @click="mcpStore.getServers ? promptStore.promptDialog = true : false"
                             icon="mdi-account-edit">
                         </v-btn>
@@ -985,8 +1044,13 @@
             <div v-if="group.group === 'user'">
                 <div class="px-2 py-5 chat-message">
                     <div class="message">
-                        <v-avatar :size=size class="mt-3 mr-3 mr-lg-6" color="primary" icon="mdi-account-circle">
-                        </v-avatar>
+                        <v-avatar
+                        :size="60"
+                        class="mt-3 mr-3 mr-lg-6"
+                        icon="mdi-music-note-multiple"
+                        style="background-color: #D86FFF; color: white;"
+                      >
+                      </v-avatar>
                         <tuui-chat-card class="gradient text-pre-wrap" :index="group.index" :messages="messages"
                             :show-modify="true">
                             <template v-slot:default="{ showmodify }">
@@ -1012,10 +1076,28 @@
             <div v-if="group.group === 'assistant'">
                 <div class="px-2 py-5 chat-message">
                     <div class="message">
-                        <v-avatar :size=size class="mt-3 mr-3 mr-lg-6" color="teal" icon="mdi-lightning-bolt-circle">
+                        <v-avatar  :size="60" class="mt-3 mr-3 mr-lg-6">
+                            <img src="bach.png" alt="bachprop" style="width: 100%; height: 100%;" />
                         </v-avatar>
                         <tuui-chat-card :index="group.index" :messages="messages" :show-content="true">
                             <template v-slot:default="{ showcontent }">
+                                <!-- Audio Player for Assistant Messages -->
+                                <div class="audio-message">
+                                    <v-card-text class="md-preview pt-1 pb-2">
+                                        {{ group.message.content }}
+                                    </v-card-text>
+                                    <v-card-text class="pt-0 pb-3">
+                                        <v-sheet color="surface-variant" rounded class="pa-2">
+                                            <audio controls style="width: 100%;" preload="metadata">
+                                                <source :src="group.message.audioURL" type="audio/wav" />
+                                                Your browser does not support the audio element.
+                                            </audio>
+                                        </v-sheet>
+                                    </v-card-text>
+                                </div>
+                                <!-- Regular Assistant Message Content -->
+
+
                                 <v-card-text v-if="group.message.reasoning_content" class="md-preview pt-1">
                                     <v-textarea class="conversation-area text-disabled font-italic" variant="plain"
                                         density='compact' auto-grow hide-details rows="1" readonly
@@ -1030,6 +1112,7 @@
                                         :language="language == 'zhHans' ? 'zh-CN' : 'en-US'" :code-foldable="true"
                                         auto-fold-threshold="Infinity"></md-preview>
                                 </v-card-text>
+
                             </template>
                         </tuui-chat-card>
                     </div>
@@ -1094,6 +1177,55 @@
             </div>
         </div>
     </template>
+
+    <style>
+        audio::-webkit-media-controls-panel {
+            background-color: rgba(30, 30, 30, 0.9);
+        }
+
+        audio::-webkit-media-controls-time-remaining-display,
+        audio::-webkit-media-controls-current-time-display {
+            color: #e0e0e0;
+            font-size: 13px;
+        }
+
+        audio::-webkit-media-controls-play-button {
+            background-color:  #D86FFF; 
+            border-radius: 50%;
+        }
+
+        audio::-webkit-media-controls-mute-button {
+            background-color: transparent;
+        }
+
+        audio::-webkit-media-controls-timeline {
+            background-color: #555;
+            border-radius: 25px;
+            height: 4px;
+        }
+
+        audio::-webkit-media-controls-volume-slider {
+            background-color: #555;
+            border-radius: 25px;
+            padding: 0 5px;
+        }
+
+        /* Additional dark theme touches */
+        audio {
+            border-radius: 8px;
+            background-color: #1e1e1e;
+        }
+
+        audio::-webkit-media-controls-current-time-display,
+        audio::-webkit-media-controls-time-remaining-display {
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+        }
+
+        audio::-webkit-media-controls-play-button:hover,
+        audio::-webkit-media-controls-mute-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    </style>
 
     <template id="tuui-img-dialog-template">
         <v-dialog>
@@ -1209,9 +1341,6 @@
                         const toolsListFunction = mcpServers[key]?.tools?.list;
                         if (typeof toolsListFunction === 'function') {
                             const tools = await toolsListFunction();
-                            // console.log(await mcpServers[key]?.prompts?.list())
-                            // console.log(await mcpServers[key]?.resources['templates/list']())
-                            // console.log(await mcpServers[key]?.resources?.list())
                             if (tools && Array.isArray(tools.tools)) {
                                 for (const tool of tools.tools) {
                                     mcpTools.push({
@@ -1276,7 +1405,8 @@
                 convertItem: function (item) {
                     if (item.type === "text") {
                         return item;
-                    } else if (item.type === "image") {
+                    }
+                    else if (item.type === "image") {
                         const imageUrl = `data:${item.mimeType};base64,${item.data}`;
                         return {
                             type: 'image_url',
@@ -1573,6 +1703,7 @@
                     const prompts = await getFun(params)
 
                     const conversations = prompts.messages.map(item => {
+                        console.log(item.content)
                         const content = mcpStore.convertItem(item.content)
                         const conversation = {
                             role: item.role,
@@ -1709,6 +1840,7 @@
                         } else {
                             const lastGroup = groups.at(-1)
                             if (lastGroup?.group == 'tool') {
+                                
                                 lastGroup.messages.push(message)
                                 dialogs[lastGroup.tab] = lastGroup.length
                                 lastGroup.length += 1
@@ -1758,7 +1890,8 @@
                         conversation: [],
                         images: [],
                         base64: '',
-                        generating: false
+                        generating: false,
+                        audioFile: null, // Added audio file property
                     }),
                     actions: {
                         init() {
@@ -1801,7 +1934,28 @@
                         },
                         sendMessage() {
                             if (this.userMessage) {
+                                const content = this.userMessage.trim().toLowerCase();
+                                console.log(content);
+
+                            
+
+
+                                // if (content.includes("play song") && this.audioFile) {
+                                //     const url = URL.createObjectURL(this.audioFile);
+                                //     this.conversation.push({
+                                //         role: "user",
+                                //         content: this.userMessage,
+                                //     });
+                                //     this.conversation.push({
+                                //         role: "assistant",
+                                //         content: "Now playing your uploaded track:",
+                                //         type: "audio",
+                                //         audioURL: url,
+                                //     });
+                                // }
+
                                 // Add the message to the list
+
 
                                 const imageBase64 = this.base64;
 
@@ -1861,7 +2015,25 @@
                                             tool_call.function.arguments
                                         );
 
-                                        console.log(result)
+                                        console.log("Tool Calls", tool_call.function)
+                                        if (tool_call.function.name === "play_music") {
+                                            const audioPath = '/Users/drewhoang/Downloads/1740265625.wav';
+                                            const audioURL = `file://${audioPath}`;
+
+                                            this.conversation.push({
+                                                role: "user",
+                                                content: tool_call.function.name,
+                                            });
+
+                                            this.conversation.push({
+                                                role: "assistant",
+                                                content: "Now playing your song...",
+                                                type: "audio",
+                                                audioURL: audioURL
+                                            });
+                                        }
+
+                                        console.log("Results", result)
 
                                         if (result.content) {
                                             this.contentConvert(result.content, tool_call.id).forEach(item => {
@@ -2113,7 +2285,7 @@
                             request
                         );
 
-                        console.log(completion)
+                        console.log("Completions", completion)
 
                         // Handle errors
                         if (!completion.ok) {

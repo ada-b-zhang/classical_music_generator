@@ -12,7 +12,7 @@
     "scripts": 
     {
         "start": "npm run build && electron ./dist/main/main.js",
-        "build": "tsc && copyfiles -f src/preload/preload.js dist/preload/ && copyfiles -f src/main/config.json dist/main/ && copyfiles -u 2 src/renderer/* dist/renderer",
+        "build": "tsc && copyfiles -u 2 src/preload/preload.js dist/preload && copyfiles -u 2 src/main/config.json dist/main && copyfiles -u 2 src/renderer/**/* dist/renderer && copyfiles -u 2 src/renderer/css/style.css dist/renderer/css && copyfiles -u 2 src/renderer/js/app.js dist/renderer/js",
         "build-app": "npm run build && electron-builder"
     },
     "build": 
