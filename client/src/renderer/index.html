@@ -2015,25 +2015,30 @@
                                             tool_call.function.arguments
                                         );
 
+                                        console.log("Result", result)
+
                                         console.log("Tool Calls", tool_call.function)
                                         if (tool_call.function.name === "play_music") {
-                                            const audioPath = '/Users/drewhoang/Downloads/1740265625.wav';
+                                            console.log("Playing music", tool_call)
+                                            const audioPath = result.content[0].text;
                                             const audioURL = `file://${audioPath}`;
 
                                             this.conversation.push({
                                                 role: "user",
                                                 content: tool_call.function.name,
+                                                tool_call_id: tool_call.id
                                             });
 
                                             this.conversation.push({
                                                 role: "assistant",
                                                 content: "Now playing your song...",
                                                 type: "audio",
-                                                audioURL: audioURL
+                                                audioURL: audioURL,
+                                                tool_call_id: tool_call.id
                                             });
                                         }
 
-                                        console.log("Results", result)
+                                        // console.log("Results", result)
 
                                         if (result.content) {
                                             this.contentConvert(result.content, tool_call.id).forEach(item => {

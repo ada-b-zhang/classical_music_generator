@@ -163,31 +163,11 @@ async def play_music(file_path: str) -> str:
     """
     Play a music file.
     """
+    home_dir = os.path.expanduser("~")
+    music_path = os.path.join(home_dir, "Music")
     try:
-        import asyncio
-        import pygame.mixer
-        
-        # Initialize only the mixer, not all of pygame
-        pygame.mixer.init()
-        
-        full_path = f'/Users/nicholasbarsi-rhyne/Projects/classical_music_generator/model/{file_path}'
-        
-        # Load the sound file
-        try:
-            sound = pygame.mixer.Sound(full_path)
-        except Exception as e:
-            return f"Error loading sound: {str(e)}"
-        
-        # Play the sound
-        channel = sound.play()
-        
-        # Sleep for a short time to let playback start
-        await asyncio.sleep(0.5)
-        
-        # Return immediately without waiting for the entire sound
-        # This prevents blocking the server
-        return f"Started playing {file_path} - playback in progress"
-        
+        full_path = os.path.join(music_path, file_path)
+        return full_path
     except Exception as e:
         return f"Error in play_music: {str(e)}"
     
