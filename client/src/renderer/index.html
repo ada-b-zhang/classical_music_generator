@@ -1082,7 +1082,8 @@
                         <tuui-chat-card :index="group.index" :messages="messages" :show-content="true">
                             <template v-slot:default="{ showcontent }">
                                 <!-- Audio Player for Assistant Messages -->
-                                <div class="audio-message">
+                                 
+                                <div v-if="group.message.audioURL" class="audio-message">
                                     <v-card-text class="md-preview pt-1 pb-2">
                                         {{ group.message.content }}
                                     </v-card-text>
@@ -2021,6 +2022,7 @@
                                     console.log("Tool Calls", tool_call.function)
                                     if (tool_call.function.name === "play_music") {
                                         console.log("Playing music", tool_call)
+                                        console.log("Result", result)
                                         const audioPath = result.content[0].text;
                                         const audioURL = `file://${audioPath}`;
 

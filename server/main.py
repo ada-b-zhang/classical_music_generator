@@ -159,7 +159,7 @@ def generate_new_music(text: str) -> str:
 
 
 @mcp.tool()
-async def play_music(file_path: str) -> str:
+async def play_music(file_path: str) -> tuple[str, str]:
     """
     Play a music file.
     """
@@ -167,7 +167,7 @@ async def play_music(file_path: str) -> str:
     music_path = os.path.join(home_dir, "Music")
     try:
         full_path = os.path.join(music_path, file_path)
-        return full_path
+        return full_path, "music"
     except Exception as e:
         return f"Error in play_music: {str(e)}"
     
