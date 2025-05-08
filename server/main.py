@@ -1,6 +1,7 @@
 from mcp.server.fastmcp import FastMCP, Context
 import os
 import requests
+import time
 
 # Create an MCP server
 mcp = FastMCP("AI Sticky Notes", dependencies=["requests"])
@@ -44,7 +45,7 @@ def generate_music_through_api(prompt: str) -> str:
             data = response.json()
             if not data.get("task_id"):
                 raise Exception(data)
-            return data['track_id']
+            return data['task_id']
     except requests.ConnectionError:
         raise Exception({"error": "Could not connect to beatoven.ai"})
     except Exception as e:
@@ -194,8 +195,7 @@ def download_generated_music(task_id: str, output_filename: str) -> str:
 
     """
     
-    home_dir = os.path.expanduser("~")
-    music_path = os.path.join(home_dir, "Music")
+    music_path = os.path.expanduser("~/Music")
     try:
         response = requests.get(
             f"{BACKEND_V1_API_URL}/tasks/{task_id}",
@@ -213,6 +213,7 @@ def download_generated_music(task_id: str, output_filename: str) -> str:
                 track_response.raise_for_status()
                 with open(os.path.join(music_path, output_filename), "wb") as file:
                     file.write(track_response.content)
+                time.sleep(1)
                 return os.path.join(music_path, output_filename)
             
             else: 
